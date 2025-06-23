@@ -28,7 +28,7 @@ def process_claim_data(df):
     # Build standardized template:
     return pd.DataFrame({
         "No": range(1, len(df) + 1),
-        "Policy No	": df["PolicyNo"],
+        "Policy No": df["PolicyNo"],
         "Client Name": df["ClientName"],
         "Claim No": df["ClaimNo"],
         "Member No": df["MemberNo"],
@@ -75,7 +75,7 @@ def process_benefit_data(df):
             df[col] = df[col].astype(str).str.strip()
     rename_mapping = {
         'ClientName': 'Client Name',
-        'PolicyNo': 'Policy No	',
+        'PolicyNo': 'Policy No',
         'ClaimNo': 'Claim No',
         'MemberNo': 'Member No',
         'PatientName': 'Patient Name',
@@ -177,9 +177,9 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
 
     # Process claim ratio data
     claim_ratio_raw = pd.read_excel(uploaded_claim_ratio, skiprows=4)
-    policy_list = claim_transformed["Policy No	"].unique().tolist()
-    claim_ratio_filtered = claim_ratio_raw[claim_ratio_raw["Policy No	"].isin(policy_list)]
-    claim_ratio_unique = claim_ratio_filtered.drop_duplicates(subset="Policy No	")
+    policy_list = claim_transformed["Policy No"].unique().tolist()
+    claim_ratio_filtered = claim_ratio_raw[claim_ratio_raw["Policy No"].isin(policy_list)]
+    claim_ratio_unique = claim_ratio_filtered.drop_duplicates(subset="Policy No")
     desired_cols = ['Company', 'Net Premi', 'Billed', 'Unpaid',
                     'Excess Total', 'Excess Coy', 'Excess Emp', 'Claim', 'CR', 'Est CR Total']
     missing_cols = [col for col in desired_cols if col not in claim_ratio_unique.columns]
@@ -189,7 +189,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     claim_ratio_unique = claim_ratio_unique.rename(columns={'Est CR Total': 'Est Claim'})
     summary_cr_df = claim_ratio_unique[['Company', 'Net Premi', 'Billed', 'Unpaid',
                                          'Excess Total', 'Excess Coy', 'Excess Emp', 'Claim', 'CR', 'Est Claim']]
-    st.subheader("Claim Ratio Data Preview (unique by Policy No	):")
+    st.subheader("Claim Ratio Data Preview (unique by Policy No):")
     st.dataframe(summary_cr_df.head())
 
     # Process benefit data
