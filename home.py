@@ -178,9 +178,8 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     # Process claim ratio data
     claim_ratio_raw = pd.read_excel(uploaded_claim_ratio, skiprows=4)
     # Trim setiap elemen di policy_list
-    policy_list = [p.strip() for p in claim_transformed["Policy No"].unique().tolist()]
-    # Filter seperti biasa
-    claim_ratio_filtered = claim_ratio_raw[claim_ratio_raw["Policy No"].isin(policy_list)]
+    policy_list = claim_transformed["Policy No"].unique().tolist()
+    claim_ratio_filtered = claim_ratio_raw[claim_transformed["Policy No"].str.strip().isin(policy_list)]
     claim_ratio_unique = claim_ratio_filtered.drop_duplicates(subset="Policy No")
     desired_cols = ['Company', 'Net Premi', 'Billed', 'Unpaid',
                     'Excess Total', 'Excess Coy', 'Excess Emp', 'Claim', 'CR', 'Est CR Total']
