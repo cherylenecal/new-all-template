@@ -691,7 +691,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         tickfont=dict(color='black')
     ),
     yaxis=dict(
-        title='Employee',22asaq
+        title='Employee',
         title_font=dict(color='black'),
         tickfont=dict(color='black')
     ),
