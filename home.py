@@ -500,6 +500,9 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     # Section 5: Top 10 Diagnoses by Product Type
     st.subheader("Top 10 Diagnoses by Product Type")
     
+    # Define color palette (light for Qty, dark for Amount)
+    color_qty = '#a6c8ea'     # Light blue
+    color_amount = '#1f77b4'  # Dark blue
     
     # Group by Product Type and Diagnosis
     diagnosis_summary = claim_transformed.groupby(['Product Type', 'Diagnosis']).agg(
@@ -524,28 +527,28 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             .head(10)
         )
     
-        # Create grouped bar chart with Plotly
+        # Create grouped bar chart
         fig = go.Figure()
     
-        # Add Qty bar
+        # Bar: Qty
         fig.add_trace(go.Bar(
             y=top_10['Diagnosis'],
             x=top_10['Qty'],
             name='Qty',
             orientation='h',
-            marker_color=colors[0]  # Blue
+            marker_color=color_qty
         ))
     
-        # Add Amount bar
+        # Bar: Amount
         fig.add_trace(go.Bar(
             y=top_10['Diagnosis'],
             x=top_10['Amount'],
             name='Amount (in millions)',
             orientation='h',
-            marker_color=colors[1]  # Lighter blue
+            marker_color=color_amount
         ))
     
-        # Layout settings
+        # Layout
         fig.update_layout(
             barmode='group',
             yaxis={'categoryorder': 'total ascending'},
@@ -558,6 +561,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         )
     
         st.plotly_chart(fig, use_container_width=True)
+
     
         
     
