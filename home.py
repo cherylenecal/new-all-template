@@ -684,7 +684,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         # Format angka
         top_10_emp_summary['Total_Claims'] = top_10_emp_summary['Total_Claims'].apply(lambda x: f"{x:,}")
         top_10_emp_summary['Total_Billed'] = top_10_emp_summary['Total_Billed'].apply(lambda x: f"{x:,.2f}")
-
+        st.write(top_10_emp_summary.columns)
         # Tampilkan tabel
         top_10_emp_summary.rename(columns={
             'Emp Name': 'Employee',
