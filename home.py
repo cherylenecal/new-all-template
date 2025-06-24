@@ -664,8 +664,8 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     if all(col in claim_transformed.columns for col in required_cols):
         # Hitung total billed dan count klaim per employee + plan
         emp_summary = claim_transformed.groupby(['Emp Name', 'Plan']).agg(
-            Total_Billed=('Sum of Billed', 'sum'),
-            Total_Claims=('Emp Name', 'count')
+            Total_Claims=('Emp Name', 'count'),
+            Total_Billed=('Sum of Billed', 'sum')
         ).reset_index()
     
         # Hitung total klaim per employee (tanpa plan) untuk menentukan top 10
@@ -682,20 +682,21 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         )
     
         # Format angka
-        top_10_emp_summary['Total_Billed'] = top_10_emp_summary['Total_Billed'].apply(lambda x: f"{x:,.2f}")
         top_10_emp_summary['Total_Claims'] = top_10_emp_summary['Total_Claims'].apply(lambda x: f"{x:,}")
+        top_10_emp_summary['Total_Billed'] = top_10_emp_summary['Total_Billed'].apply(lambda x: f"{x:,.2f}")
     
         # Tampilkan tabel
         st.dataframe(top_10_emp_summary.rename(columns={
             'Emp Name': 'Employee',
             'Plan': 'Plan',
-            'Total_Billed': 'Total Billed',
-            'Total_Claims': 'Total Claims'
+            'Total_Claims': 'Total Claims',
+            'Total_Billed': 'Total Billed'
         }))
     
     else:
         st.warning("Kolom yang dibutuhkan tidak ditemukan dalam data klaim.")
     
-            
-            
-                    
+        
+                
+                
+                        
