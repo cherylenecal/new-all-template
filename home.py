@@ -176,7 +176,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     st.dataframe(claim_transformed.head())
 
     # Process claim ratio data
-    claim_ratio_raw = pd.read_excel(uploaded_claim_ratio)
+    claim_ratio_raw = pd.read_excel(uploaded_claim_ratio, sheet_name="Sheet3")
     policy_list = claim_transformed["Policy No"].unique().tolist()
     claim_ratio_filtered = claim_ratio_raw[claim_ratio_raw["Policy No"].isin(policy_list)]
     claim_ratio_unique = claim_ratio_filtered.drop_duplicates(subset="Policy No")
