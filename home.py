@@ -510,10 +510,10 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         Qty=('Sum of Billed', 'count')
     ).reset_index()
     
-    # Scale
+    # Scale to millions
     diagnosis_summary['Amount'] = diagnosis_summary['Amount'] / 1_000_000
     
-    # Loop per product
+    # Loop per product type
     for product in diagnosis_summary['Product Type'].unique():
         st.markdown(f"### {product}")
     
@@ -525,26 +525,30 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         fig = go.Figure()
     
-        # 1. Qty (ditambahkan dulu agar ada di bawah di grafik)
+        # Trace 1: Qty (ditaruh dulu supaya tampil di bawah)
         fig.add_trace(go.Bar(
             y=top_10['Diagnosis'],
             x=top_10['Qty'],
             name='Qty',
             orientation='h',
             marker_color=color_qty,
+            text=[f"{v:,}" for v in top_10['Qty']],
+            textposition='outside',
             legendgroup='qty',
             legendrank=2
         ))
     
-        # 2. Amount (ditambahkan kedua agar tampil di atas)
+        # Trace 2: Amount (tampil di atas, legend duluan)
         fig.add_trace(go.Bar(
             y=top_10['Diagnosis'],
             x=top_10['Amount'],
             name='Amount (in millions)',
             orientation='h',
             marker_color=color_amount,
+            text=[f"{v:,.2f}" if v < 1 else f"{v:,.0f}" for v in top_10['Amount']],
+            textposition='outside',
             legendgroup='amount',
-            legendrank=1  # Legend akan muncul duluan
+            legendrank=1
         ))
     
         # Layout
@@ -560,3 +564,6 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         )
     
         st.plotly_chart(fig, use_container_width=True)
+    
+        
+            st.plotly_chart(fig, use_container_width=True)
