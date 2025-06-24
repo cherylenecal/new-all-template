@@ -702,5 +702,36 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     # Tampilkan di Streamlit
     st.plotly_chart(fig, use_container_width=True)
 
-
-        
+    st.subheader("Employee - Plan Summary Table")
+    
+    # Pastikan kolom tersedia
+    if {'Emp Name', 'Plan', 'Sum of Billed'}.issubset(claim_transformed.columns):
+        # Group by Emp Name and Plan
+        emp_plan_summary = (
+            claim_transformed.groupby(['Emp Name', 'Plan'])
+            .agg(
+                Total_Billed=('Sum of Billed', 'sum'),
+                Total_Qty=('Claim No', 'count')
+            )
+            .reset_index()
+        )
+    
+        # Format nilai uang
+        emp_plan_summary['Total_Billed'] = emp_plan_summary['Total_Billed'].apply(lambda x: f"{x:,.2f}")
+        emp_plan_summary['Total_Qty'] = emp_plan_summary['Total_Qty'].apply(lambda x: f"{x:,}")
+    
+        # Rename kolom untuk tampilan
+        emp_plan_summary = emp_plan_summary.rename(columns={
+            'Emp Name': 'Employee',
+            'Plan': 'Plan',
+            'Total_Billed': 'Total Billed',
+            'Total_Qty': 'Total Qty'
+        })
+    
+        # Tampilkan tabel
+        st.dataframe(emp_plan_summary)
+    else:
+        st.warning("Kolom yang dibutuhkan ('Emp Name', 'Plan', 'Sum of Billed') tidak ditemukan.")
+    
+    
+            
