@@ -655,48 +655,39 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
     st.plotly_chart(fig, use_container_width=True)
 
-    # Section 7: Top 10 Employees Table
+    # Section 7: Top 10 Employees by Claims
     st.subheader("Top 10 Employees by Number of Claims")
     
-    # Pastikan kolom yang dibutuhkan tersedia
-    required_cols = ['Emp Name', 'Plan', 'Sum of Billed']
+    # Use the transformed claim data
+    df_emp = claim_transformed.copy()
     
-    if all(col in claim_transformed.columns for col in required_cols):
-        # Hitung total billed dan count klaim per employee + plan
-        emp_summary = claim_transformed.groupby(['Emp Name', 'Plan']).agg(
-            Total_Claims=('Emp Name', 'count'),
-            Total_Billed=('Sum of Billed', 'sum')
-        ).reset_index()
+    # Group and summarize by Emp Name and Plan
+    top_10_emp_summary = (
+        df_emp.groupby(['Emp Name', 'Plan'])
+              .agg(
+                  Total_Claims=('Emp Name', 'count'),
+                  Total_Billed=('Sum of Billed', 'sum')
+              )
+              .reset_index()
+    )
     
-        # Hitung total klaim per employee (tanpa plan) untuk menentukan top 10
-        emp_total_claims = emp_summary.groupby('Emp Name')['Total_Claims'].sum().reset_index()
-        emp_total_claims = emp_total_claims.sort_values(by='Total_Claims', ascending=False).head(10)
+    # Sort and keep top 10 employees by number of claims
+    top_10_emp_summary = top_10_emp_summary.sort_values(by='Total_Claims', ascending=False).head(10)
     
-        # Filter summary agar hanya menampilkan data untuk top 10 employee
-        top_10_names = emp_total_claims['Emp Name'].tolist()
-        top_10_emp_summary = emp_summary[emp_summary['Emp Name'].isin(top_10_names)]
+    # Rename columns
+    top_10_emp_summary = top_10_emp_summary.rename(columns={
+        'Emp Name': 'Employee',
+        'Plan': 'Plan',
+        'Total_Claims': 'Total Claims',
+        'Total_Billed': 'Total Billed'
+    })
     
-        # Urutkan berdasarkan Total_Claims dan Total_Billed
-        top_10_emp_summary = top_10_emp_summary.sort_values(
-            by=['Total_Claims', 'Total_Billed'], ascending=[False, False]
-        )
+    # Reorder columns
+    top_10_emp_summary = top_10_emp_summary[['Employee', 'Plan', 'Total Claims', 'Total Billed']]
     
-        # Format angka
-        top_10_emp_summary['Total_Claims'] = top_10_emp_summary['Total_Claims'].apply(lambda x: f"{x:,}")
-        top_10_emp_summary['Total_Billed'] = top_10_emp_summary['Total_Billed'].apply(lambda x: f"{x:,.2f}")
-
-        top_10_emp_summary = top_10_emp_summary[['Emp Name', 'Plan', 'Total_Claims', 'Total_Billed']]
-
-        # Tampilkan tabel
-        top_10_emp_summary = top_10_emp_summary.rename(columns={
-            'Emp Name': 'Employee',
-            'Total_Claims': 'Total Claims',
-            'Total_Billed': 'Total Billed'
-        }, inplace=True)
-        
-        # top_10_emp_summary = top_10_emp_summary[['Employee', 'Plan', 'Total Claims', 'Total Billed']]
-        
-        st.dataframe(top_10_emp_summary, hide_index=True)
+    # Format numerical columns for readability
+    top_10_emp_summary['Total Claims'] = top_10_emp_summary['Total Claims'].map('{:,.0f}'.format)
+    top_10_emp_summary['Total Billed'] = top_10_emp_summary['Total Billed'].map('{:,.2f}'.format)
     
-    else:
-        st.warning("Kolom yang dibutuhkan tidak ditemukan dalam data klaim.")
+    # Display the summary table
+    st.dataframe(top_10_emp_summary, hide_index=True)
