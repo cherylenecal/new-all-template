@@ -564,6 +564,4 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         )
     
         st.plotly_chart(fig, use_container_width=True)
-    
-        
-            st.plotly_chart(fig, use_container_width=True)
+
