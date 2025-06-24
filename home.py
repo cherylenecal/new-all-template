@@ -684,16 +684,17 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         # Format angka
         top_10_emp_summary['Total_Claims'] = top_10_emp_summary['Total_Claims'].apply(lambda x: f"{x:,}")
         top_10_emp_summary['Total_Billed'] = top_10_emp_summary['Total_Billed'].apply(lambda x: f"{x:,.2f}")
-        
+
+        top_10_emp_summary = top_10_emp_summary[['Emp Name', 'Plan', 'Total_Claims', 'Total_Billed']]
+
         # Tampilkan tabel
         top_10_emp_summary = top_10_emp_summary.rename(columns={
             'Emp Name': 'Employee',
-            'Plan': 'Plan',
             'Total_Claims': 'Total Claims',
             'Total_Billed': 'Total Billed'
         }, inplace=True)
         
-        top_10_emp_summary = top_10_emp_summary[['Employee', 'Plan', 'Total Claims', 'Total Billed']]
+        # top_10_emp_summary = top_10_emp_summary[['Employee', 'Plan', 'Total Claims', 'Total Billed']]
         
         st.dataframe(top_10_emp_summary, hide_index=True)
     
