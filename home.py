@@ -507,7 +507,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     ).reset_index()
     
     # Convert Amount to millions
-    diagnosis_summary['Amount'] = diagnosis_summary['Amount'] / 1000000
+    diagnosis_summary['Amount'] = diagnosis_summary['Amount'] / 1_000_000
     
     # List unique product types
     product_types = diagnosis_summary['Product Type'].unique()
@@ -526,7 +526,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         # Create horizontal bar chart with Plotly
         fig = go.Figure()
     
-        # Add bar for Qty (on the same axis)
+        # Add Qty bar
         fig.add_trace(go.Bar(
             y=top_10['Diagnosis'],
             x=top_10['Qty'],
@@ -535,7 +535,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             marker_color='skyblue'
         ))
     
-        # Add bar for Amount (in millions), stacked
+        # Add Amount bar
         fig.add_trace(go.Bar(
             y=top_10['Diagnosis'],
             x=top_10['Amount'],
@@ -546,8 +546,8 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         # Layout and design
         fig.update_layout(
-            barmode='stack',
-            yaxis={'categoryorder': 'total ascending'},  # largest on top
+            barmode='group',  # <- Ini yang penting agar tidak stacked
+            yaxis={'categoryorder': 'total ascending'},
             xaxis_title='Value',
             height=400,
             margin=dict(t=40, b=40),
@@ -556,4 +556,5 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         )
     
         st.plotly_chart(fig, use_container_width=True)
+    
 
