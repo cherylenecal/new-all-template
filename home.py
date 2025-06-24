@@ -695,7 +695,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         
         top_10_emp_summary = top_10_emp_summary[['Employee', 'Plan', 'Total Claims', 'Total Billed']]
         
-        st.dataframe(top_10_emp_summary, hide_index=True))
+        st.dataframe(top_10_emp_summary, hide_index=True)
     
     else:
         st.warning("Kolom yang dibutuhkan tidak ditemukan dalam data klaim.")
