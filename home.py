@@ -555,24 +555,24 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         # Layout
         fig.update_layout(
-            barmode='group',
-            yaxis=dict(
-                categoryorder='total ascending',
-                title='Diagnosis',
-                title_font=dict(color='black'),
-                tickfont=dict(color='black')
-            ),
-            xaxis=dict(
-                title='Value',
-                title_font=dict(color='black'),
-                tickfont=dict(color='black')
-            ),
-            font=dict(color='black'),  # General text color (legend, etc.)
-            legend_title_text='',
-            height=400,
-            margin=dict(t=40, b=40),
-            bargap=0.2
-        )
+        barmode='group',
+        yaxis=dict(
+            categoryorder='total ascending',
+            title='Diagnosis',
+            title_font=dict(color='black', size=14),
+            tickfont=dict(color='black', size=12)
+        ),
+        xaxis=dict(
+            title='Value',
+            title_font=dict(color='black', size=14),
+            tickfont=dict(color='black', size=12)
+        ),
+        font=dict(color='black', size=14),
+        legend_title_text='',
+        height=600,
+        width=900,  # atau hilangkan dan pakai use_container_width=True
+        bargap=0.2
+    )
     
         st.plotly_chart(fig, use_container_width=True)
     
