@@ -575,4 +575,83 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         )
     
         st.plotly_chart(fig, use_container_width=True)
+
+    # Section 6: Top 10 Treatment Places by Claim Type
+    st.subheader("Top 10 Treatment Places by Claim Type")
     
+    # Warna tetap sama
+    color_amount = '#1f77b4'  # Dark blue
+    color_qty = '#a6c8ea'     # Light blue
+    
+    # Grouping
+    treatment_place_summary = claim_transformed.groupby(['Claim Type', 'Treatment Place']).agg(
+        Amount=('Sum of Billed', 'sum'),
+        Qty=('Sum of Billed', 'count')
+    ).reset_index()
+    
+    # Scale to millions
+    treatment_place_summary['Amount'] = treatment_place_summary['Amount'] / 1_000_000
+    
+    # Loop per Claim Type
+    for claim_type in treatment_place_summary['Claim Type'].unique():
+        st.markdown(f"### {claim_type}")
+    
+        top_10 = (
+            treatment_place_summary[treatment_place_summary['Claim Type'] == claim_type]
+            .sort_values(by='Amount', ascending=False)
+            .head(10)
+        )
+    
+        fig = go.Figure()
+    
+        # Trace 1: Qty (first → appears below)
+        fig.add_trace(go.Bar(
+            y=top_10['Treatment Place'],
+            x=top_10['Qty'],
+            name='Qty',
+            orientation='h',
+            marker_color=color_qty,
+            text=[f"{v:,}" for v in top_10['Qty']],
+            textposition='outside',
+            textfont=dict(color='black'),
+            legendgroup='qty',
+            legendrank=2
+        ))
+    
+        # Trace 2: Amount (second → appears above)
+        fig.add_trace(go.Bar(
+            y=top_10['Treatment Place'],
+            x=top_10['Amount'],
+            name='Amount (in millions)',
+            orientation='h',
+            marker_color=color_amount,
+            text=[f"{v:,.2f}" if v < 1 else f"{v:,.0f}" for v in top_10['Amount']],
+            textposition='outside',
+            textfont=dict(color='black'),
+            legendgroup='amount',
+            legendrank=1
+        ))
+    
+        # Layout
+        fig.update_layout(
+            barmode='group',
+            yaxis=dict(
+                categoryorder='total ascending',
+                title='Treatment Place',
+                title_font=dict(color='black'),
+                tickfont=dict(color='black')
+            ),
+            xaxis=dict(
+                title='Value',
+                title_font=dict(color='black'),
+                tickfont=dict(color='black')
+            ),
+            font=dict(color='black'),
+            legend_title_text='',
+            height=400,
+            margin=dict(t=40, b=40),
+            bargap=0.2
+        )
+    
+        st.plotly_chart(fig, use_container_width=True)
+        
