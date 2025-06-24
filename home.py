@@ -176,7 +176,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     st.dataframe(claim_transformed.head())
 
     # Process claim ratio data
-    claim_ratio_raw = pd.read_excel(uploaded_claim_ratio, skiprows=4)
+    claim_ratio_raw = pd.read_excel(uploaded_claim_ratio)
     # Trim setiap elemen di policy_list
     policy_list = claim_transformed["Policy No"].unique().tolist()
     claim_ratio_filtered = claim_ratio_raw[claim_ratio_raw["Policy No"].isin(policy_list)]
