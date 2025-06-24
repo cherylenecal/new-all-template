@@ -496,3 +496,64 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
     else:
         st.warning("'Settled Date' or 'Product Type' column not found in Claim Data. Cannot generate Section 4 visualization.")
+
+# Section 5: Top 10 Diagnoses by Product Type
+st.subheader("Top 10 Diagnoses by Product Type")
+
+# Group by Product Type and Diagnosis
+diagnosis_summary = claim_transformed.groupby(['Product Type', 'Diagnosis']).agg(
+    Amount=('Sum of Billed', 'sum'),
+    Qty=('Sum of Billed', 'count')  # Count rows
+).reset_index()
+
+# Convert Amount to millions
+diagnosis_summary['Amount'] = diagnosis_summary['Amount'] / 1_000_000
+
+# List unique product types
+product_types = diagnosis_summary['Product Type'].unique()
+
+# Loop through each product type
+for product in product_types:
+    st.markdown(f"### {product}")
+
+    # Filter top 10 diagnosis by Amount
+    top_10 = (
+        diagnosis_summary[diagnosis_summary['Product Type'] == product]
+        .sort_values(by='Amount', ascending=False)
+        .head(10)
+    )
+
+    # Create horizontal bar chart with Plotly
+    fig = go.Figure()
+
+    # Add bar for Qty (on the same axis)
+    fig.add_trace(go.Bar(
+        y=top_10['Diagnosis'],
+        x=top_10['Qty'],
+        name='Qty',
+        orientation='h',
+        marker_color='skyblue'
+    ))
+
+    # Add bar for Amount (in millions), stacked
+    fig.add_trace(go.Bar(
+        y=top_10['Diagnosis'],
+        x=top_10['Amount'],
+        name='Amount (in millions)',
+        orientation='h',
+        marker_color='lightcoral'
+    ))
+
+    # Layout and design
+    fig.update_layout(
+        barmode='stack',
+        yaxis={'categoryorder': 'total ascending'},  # largest on top
+        xaxis_title='Value',
+        height=400,
+        margin=dict(t=40, b=40),
+        legend_title_text='',
+        font=dict(size=12),
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
