@@ -653,8 +653,8 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             bargap=0.2
         )
     
-        st.plotly_chart(fig, use_container_width=True)
-        st.write("Kolom yang tersedia:", claim_transformed.columns)
+    st.plotly_chart(fig, use_container_width=True)
+    st.write("Kolom yang tersedia:", claim_transformed.columns)
 
     # Section 7: Top 10 Employees by Number of Claims
     st.subheader("Top 10 Employees by Number of Claims")
