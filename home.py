@@ -684,7 +684,9 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         # Format angka
         top_10_emp_summary['Total_Claims'] = top_10_emp_summary['Total_Claims'].apply(lambda x: f"{x:,}")
         top_10_emp_summary['Total_Billed'] = top_10_emp_summary['Total_Billed'].apply(lambda x: f"{x:,.2f}")
-    
+
+        top_10_emp_summary = top_10_emp_summary[['Employee', 'Plan', 'Total Claims', 'Total Billed']]
+
         # Tampilkan tabel
         st.dataframe(top_10_emp_summary.rename(columns={
             'Emp Name': 'Employee',
@@ -695,8 +697,3 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
     else:
         st.warning("Kolom yang dibutuhkan tidak ditemukan dalam data klaim.")
-    
-        
-                
-                
-                        
