@@ -500,7 +500,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     # Section 5: Top 10 Diagnoses by Product Type
     st.subheader("Top 10 Diagnoses by Product Type")
     
-    # Define color palette (dark for Amount, light for Qty)
+    # Warna
     color_amount = '#1f77b4'  # Dark blue
     color_qty = '#a6c8ea'     # Light blue
     
@@ -510,42 +510,41 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         Qty=('Sum of Billed', 'count')
     ).reset_index()
     
-    # Scale to millions
+    # Scale
     diagnosis_summary['Amount'] = diagnosis_summary['Amount'] / 1_000_000
     
-    # Unique product types
-    product_types = diagnosis_summary['Product Type'].unique()
-    
     # Loop per product
-    for product in product_types:
+    for product in diagnosis_summary['Product Type'].unique():
         st.markdown(f"### {product}")
     
-        # Top 10 diagnoses by Amount
         top_10 = (
             diagnosis_summary[diagnosis_summary['Product Type'] == product]
             .sort_values(by='Amount', ascending=False)
             .head(10)
         )
     
-        # Initialize plot
         fig = go.Figure()
     
-        # First trace: Amount (darker, first in legend)
-        fig.add_trace(go.Bar(
-            y=top_10['Diagnosis'],
-            x=top_10['Amount'],
-            name='Amount (in millions)',
-            orientation='h',
-            marker_color=color_amount
-        ))
-    
-        # Second trace: Qty (lighter, second in legend)
+        # 1. Qty (ditambahkan dulu agar ada di bawah di grafik)
         fig.add_trace(go.Bar(
             y=top_10['Diagnosis'],
             x=top_10['Qty'],
             name='Qty',
             orientation='h',
-            marker_color=color_qty
+            marker_color=color_qty,
+            legendgroup='qty',
+            legendrank=2
+        ))
+    
+        # 2. Amount (ditambahkan kedua agar tampil di atas)
+        fig.add_trace(go.Bar(
+            y=top_10['Diagnosis'],
+            x=top_10['Amount'],
+            name='Amount (in millions)',
+            orientation='h',
+            marker_color=color_amount,
+            legendgroup='amount',
+            legendrank=1  # Legend akan muncul duluan
         ))
     
         # Layout
@@ -555,14 +554,9 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             xaxis_title='Value',
             height=400,
             margin=dict(t=40, b=40),
-            legend_title_text='',
             font=dict(size=12),
-            bargap=0.2
+            bargap=0.2,
+            legend_title_text=''
         )
     
         st.plotly_chart(fig, use_container_width=True)
-    
-    
-        
-            
-        
