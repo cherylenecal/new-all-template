@@ -525,7 +525,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         fig = go.Figure()
     
-        # Trace 1: Qty (ditaruh dulu supaya tampil di bawah)
+        # Trace 1: Qty
         fig.add_trace(go.Bar(
             y=top_10['Diagnosis'],
             x=top_10['Qty'],
@@ -534,11 +534,12 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             marker_color=color_qty,
             text=[f"{v:,}" for v in top_10['Qty']],
             textposition='outside',
+            textfont=dict(color='black'),
             legendgroup='qty',
             legendrank=2
         ))
     
-        # Trace 2: Amount (tampil di atas, legend duluan)
+        # Trace 2: Amount
         fig.add_trace(go.Bar(
             y=top_10['Diagnosis'],
             x=top_10['Amount'],
@@ -547,6 +548,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             marker_color=color_amount,
             text=[f"{v:,.2f}" if v < 1 else f"{v:,.0f}" for v in top_10['Amount']],
             textposition='outside',
+            textfont=dict(color='black'),
             legendgroup='amount',
             legendrank=1
         ))
@@ -554,14 +556,23 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         # Layout
         fig.update_layout(
             barmode='group',
-            yaxis={'categoryorder': 'total ascending'},
-            xaxis_title='Value',
+            yaxis=dict(
+                categoryorder='total ascending',
+                title='Diagnosis',
+                title_font=dict(color='black'),
+                tickfont=dict(color='black')
+            ),
+            xaxis=dict(
+                title='Value',
+                title_font=dict(color='black'),
+                tickfont=dict(color='black')
+            ),
+            font=dict(color='black'),  # General text color (legend, etc.)
+            legend_title_text='',
             height=400,
             margin=dict(t=40, b=40),
-            font=dict(size=12),
-            bargap=0.2,
-            legend_title_text=''
+            bargap=0.2
         )
     
         st.plotly_chart(fig, use_container_width=True)
-
+    
