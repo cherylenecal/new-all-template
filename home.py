@@ -692,6 +692,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             'Total_Claims': 'Total Claims',
             'Total_Billed': 'Total Billed'
         })
+        
         st.write(top_10_emp_summary.columns)
         top_10_emp_summary = top_10_emp_summary[['Employee', 'Plan', 'Total Claims', 'Total Billed']]
         
