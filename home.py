@@ -691,7 +691,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             'Plan': 'Plan',
             'Total_Claims': 'Total Claims',
             'Total_Billed': 'Total Billed'
-        })
+        }, inplace=True)
         
         top_10_emp_summary = top_10_emp_summary[['Employee', 'Plan', 'Total Claims', 'Total Billed']]
         
