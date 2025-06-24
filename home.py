@@ -686,7 +686,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         top_10_emp_summary['Total_Billed'] = top_10_emp_summary['Total_Billed'].apply(lambda x: f"{x:,.2f}")
         
         # Tampilkan tabel
-        top_10_emp_summary.rename(columns={
+        top_10_emp_summary = top_10_emp_summary.rename(columns={
             'Emp Name': 'Employee',
             'Plan': 'Plan',
             'Total_Claims': 'Total Claims',
