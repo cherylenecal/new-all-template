@@ -654,11 +654,11 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         )
     
     st.plotly_chart(fig, use_container_width=True)
-    st.write("Kolom yang tersedia:", claim_transformed.columns)
-
+    
     # Section 7: Top 10 Employees by Number of Claims
     st.subheader("Top 10 Employees by Number of Claims")
-    
+    st.write("Kolom yang tersedia:", claim_transformed.columns)
+
     # Hitung jumlah klaim per Employee
     employee_counts = claim_transformed['Emp Name'].value_counts().reset_index()
     employee_counts.columns = ['Employee', 'Frequency']
