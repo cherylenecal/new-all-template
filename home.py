@@ -655,7 +655,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
     st.plotly_chart(fig, use_container_width=True)
 
-    # Section 8: Top 10 Employees Table
+    # Section 7: Top 10 Employees Table
     st.subheader("Top 10 Employees by Number of Claims")
     
     # Pastikan kolom yang dibutuhkan tersedia
