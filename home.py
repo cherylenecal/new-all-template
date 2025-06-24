@@ -656,52 +656,52 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         st.plotly_chart(fig, use_container_width=True)
         st.write("Kolom yang tersedia:", claim_transformed.columns)
 
-        # Section 7: Top 10 Employees by Number of Claims
-        st.subheader("Top 10 Employees by Number of Claims")
-        
-        # Hitung jumlah klaim per Employee
-        employee_counts = claim_transformed['Emp Name'].value_counts().reset_index()
-        employee_counts.columns = ['Employee', 'Frequency']
-        
-        # Ambil 10 teratas
-        top_10_employees = employee_counts.head(10).sort_values('Frequency', ascending=True)
-        
-        # Plot dengan warna konsisten
-        color_employee = '#1f77b4'
-        
-        # Buat chart
-        fig = go.Figure()
-        
-        fig.add_trace(go.Bar(
-            y=top_10_employees['Employee'],
-            x=top_10_employees['Frequency'],
-            orientation='h',
-            marker_color=color_employee,
-            text=[f"{v:,}" for v in top_10_employees['Frequency']],
-            textposition='outside',
-            textfont=dict(color='black')
-        ))
-        
-        # Layout styling
-        fig.update_layout(
-            title='Top 10 Employees by Number of Claims',
-            xaxis=dict(
-                title='Number of Claims',
-                title_font=dict(color='black'),
-                tickfont=dict(color='black')
-            ),
-            yaxis=dict(
-                title='Employee',22asaq
-                title_font=dict(color='black'),
-                tickfont=dict(color='black')
-            ),
-            font=dict(color='black'),
-            height=400,
-            margin=dict(t=40, b=40)
-        )
-        
-        # Tampilkan di Streamlit
-        st.plotly_chart(fig, use_container_width=True)
+    # Section 7: Top 10 Employees by Number of Claims
+    st.subheader("Top 10 Employees by Number of Claims")
+    
+    # Hitung jumlah klaim per Employee
+    employee_counts = claim_transformed['Emp Name'].value_counts().reset_index()
+    employee_counts.columns = ['Employee', 'Frequency']
+    
+    # Ambil 10 teratas
+    top_10_employees = employee_counts.head(10).sort_values('Frequency', ascending=True)
+    
+    # Plot dengan warna konsisten
+    color_employee = '#1f77b4'
+    
+    # Buat chart
+    fig = go.Figure()
+    
+    fig.add_trace(go.Bar(
+    y=top_10_employees['Employee'],
+    x=top_10_employees['Frequency'],
+    orientation='h',
+    marker_color=color_employee,
+    text=[f"{v:,}" for v in top_10_employees['Frequency']],
+    textposition='outside',
+    textfont=dict(color='black')
+    ))
+    
+    # Layout styling
+    fig.update_layout(
+    title='Top 10 Employees by Number of Claims',
+    xaxis=dict(
+        title='Number of Claims',
+        title_font=dict(color='black'),
+        tickfont=dict(color='black')
+    ),
+    yaxis=dict(
+        title='Employee',22asaq
+        title_font=dict(color='black'),
+        tickfont=dict(color='black')
+    ),
+    font=dict(color='black'),
+    height=400,
+    margin=dict(t=40, b=40)
+    )
+    
+    # Tampilkan di Streamlit
+    st.plotly_chart(fig, use_container_width=True)
 
 
         
