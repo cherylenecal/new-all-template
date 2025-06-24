@@ -578,7 +578,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
 
     # Section 6: Top 10 Treatment Places by Claim Type
     st.subheader("Top 10 Treatment Places by Claim Type")
-    
+    st.write("Kolom yang tersedia:", claim_transformed.columns)
     # Warna tetap sama
     color_amount = '#1f77b4'  # Dark blue
     color_qty = '#a6c8ea'     # Light blue
