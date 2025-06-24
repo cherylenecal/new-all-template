@@ -500,52 +500,52 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     # Section 5: Top 10 Diagnoses by Product Type
     st.subheader("Top 10 Diagnoses by Product Type")
     
-    # Define color palette (light for Qty, dark for Amount)
-    color_qty = '#a6c8ea'     # Light blue
+    # Define color palette (dark for Amount, light for Qty)
     color_amount = '#1f77b4'  # Dark blue
+    color_qty = '#a6c8ea'     # Light blue
     
-    # Group by Product Type and Diagnosis
+    # Grouping
     diagnosis_summary = claim_transformed.groupby(['Product Type', 'Diagnosis']).agg(
         Amount=('Sum of Billed', 'sum'),
         Qty=('Sum of Billed', 'count')
     ).reset_index()
     
-    # Convert Amount to millions
+    # Scale to millions
     diagnosis_summary['Amount'] = diagnosis_summary['Amount'] / 1_000_000
     
-    # List unique product types
+    # Unique product types
     product_types = diagnosis_summary['Product Type'].unique()
     
-    # Loop through each product type
+    # Loop per product
     for product in product_types:
         st.markdown(f"### {product}")
     
-        # Filter top 10 diagnosis by Amount
+        # Top 10 diagnoses by Amount
         top_10 = (
             diagnosis_summary[diagnosis_summary['Product Type'] == product]
             .sort_values(by='Amount', ascending=False)
             .head(10)
         )
     
-        # Create grouped bar chart
+        # Initialize plot
         fig = go.Figure()
     
-        # Bar: Qty
-        fig.add_trace(go.Bar(
-            y=top_10['Diagnosis'],
-            x=top_10['Qty'],
-            name='Qty',
-            orientation='h',
-            marker_color=color_qty
-        ))
-    
-        # Bar: Amount
+        # First trace: Amount (darker, first in legend)
         fig.add_trace(go.Bar(
             y=top_10['Diagnosis'],
             x=top_10['Amount'],
             name='Amount (in millions)',
             orientation='h',
             marker_color=color_amount
+        ))
+    
+        # Second trace: Qty (lighter, second in legend)
+        fig.add_trace(go.Bar(
+            y=top_10['Diagnosis'],
+            x=top_10['Qty'],
+            name='Qty',
+            orientation='h',
+            marker_color=color_qty
         ))
     
         # Layout
@@ -561,7 +561,8 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         )
     
         st.plotly_chart(fig, use_container_width=True)
-
+    
     
         
-    
+            
+        
