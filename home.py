@@ -578,7 +578,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
 
     # Section 6: Top 10 Treatment Places by Claim Type
     st.subheader("Top 10 Treatment Places by Claim Type")
-    st.write("Kolom yang tersedia:", claim_transformed.columns)
+
     # Warna tetap sama
     color_amount = '#1f77b4'  # Dark blue
     color_qty = '#a6c8ea'     # Light blue
@@ -654,84 +654,48 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         )
     
     st.plotly_chart(fig, use_container_width=True)
-    
-    # Section 7: Top 10 Employees by Number of Claims
+
+    # Section 8: Top 10 Employees Table
     st.subheader("Top 10 Employees by Number of Claims")
-
-    # Hitung jumlah klaim per Employee
-    employee_counts = claim_transformed['Emp Name'].value_counts().reset_index()
-    employee_counts.columns = ['Employee', 'Frequency']
     
-    # Ambil 10 teratas
-    top_10_employees = employee_counts.head(10).sort_values('Frequency', ascending=True)
+    # Pastikan kolom yang dibutuhkan tersedia
+    required_cols = ['Emp Name', 'Plan', 'Sum of Billed']
     
-    # Plot dengan warna konsisten
-    color_employee = '#1f77b4'
+    if all(col in claim_transformed.columns for col in required_cols):
+        # Hitung total billed dan count klaim per employee + plan
+        emp_summary = claim_transformed.groupby(['Emp Name', 'Plan']).agg(
+            Total_Billed=('Sum of Billed', 'sum'),
+            Total_Claims=('Emp Name', 'count')
+        ).reset_index()
     
-    # Buat chart
-    fig = go.Figure()
+        # Hitung total klaim per employee (tanpa plan) untuk menentukan top 10
+        emp_total_claims = emp_summary.groupby('Emp Name')['Total_Claims'].sum().reset_index()
+        emp_total_claims = emp_total_claims.sort_values(by='Total_Claims', ascending=False).head(10)
     
-    fig.add_trace(go.Bar(
-    y=top_10_employees['Employee'],
-    x=top_10_employees['Frequency'],
-    orientation='h',
-    marker_color=color_employee,
-    text=[f"{v:,}" for v in top_10_employees['Frequency']],
-    textposition='outside',
-    textfont=dict(color='black')
-    ))
+        # Filter summary agar hanya menampilkan data untuk top 10 employee
+        top_10_names = emp_total_claims['Emp Name'].tolist()
+        top_10_emp_summary = emp_summary[emp_summary['Emp Name'].isin(top_10_names)]
     
-    # Layout styling
-    fig.update_layout(
-    title='Top 10 Employees by Number of Claims',
-    xaxis=dict(
-        title='Number of Claims',
-        title_font=dict(color='black'),
-        tickfont=dict(color='black')
-    ),
-    yaxis=dict(
-        title='Employee',
-        title_font=dict(color='black'),
-        tickfont=dict(color='black')
-    ),
-    font=dict(color='black'),
-    height=400,
-    margin=dict(t=40, b=40)
-    )
-    
-    # Tampilkan di Streamlit
-    st.plotly_chart(fig, use_container_width=True)
-
-    st.subheader("Employee - Plan Summary Table")
-    
-    # Pastikan kolom tersedia
-    if {'Emp Name', 'Plan', 'Sum of Billed'}.issubset(claim_transformed.columns):
-        # Group by Emp Name and Plan
-        emp_plan_summary = (
-            claim_transformed.groupby(['Emp Name', 'Plan'])
-            .agg(
-                Total_Billed=('Sum of Billed', 'sum'),
-                Total_Qty=('Claim No', 'count')
-            )
-            .reset_index()
+        # Urutkan berdasarkan Total_Claims dan Total_Billed
+        top_10_emp_summary = top_10_emp_summary.sort_values(
+            by=['Total_Claims', 'Total_Billed'], ascending=[False, False]
         )
     
-        # Format nilai uang
-        emp_plan_summary['Total_Billed'] = emp_plan_summary['Total_Billed'].apply(lambda x: f"{x:,.2f}")
-        emp_plan_summary['Total_Qty'] = emp_plan_summary['Total_Qty'].apply(lambda x: f"{x:,}")
+        # Format angka
+        top_10_emp_summary['Total_Billed'] = top_10_emp_summary['Total_Billed'].apply(lambda x: f"{x:,.2f}")
+        top_10_emp_summary['Total_Claims'] = top_10_emp_summary['Total_Claims'].apply(lambda x: f"{x:,}")
     
-        # Rename kolom untuk tampilan
-        emp_plan_summary = emp_plan_summary.rename(columns={
+        # Tampilkan tabel
+        st.dataframe(top_10_emp_summary.rename(columns={
             'Emp Name': 'Employee',
             'Plan': 'Plan',
             'Total_Billed': 'Total Billed',
-            'Total_Qty': 'Total Qty'
-        })
+            'Total_Claims': 'Total Claims'
+        }))
     
-        # Tampilkan tabel
-        st.dataframe(emp_plan_summary)
     else:
-        st.warning("Kolom yang dibutuhkan ('Emp Name', 'Plan', 'Sum of Billed') tidak ditemukan.")
-    
+        st.warning("Kolom yang dibutuhkan tidak ditemukan dalam data klaim.")
     
             
+            
+                    
