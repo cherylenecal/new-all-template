@@ -500,10 +500,11 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     # Section 5: Top 10 Diagnoses by Product Type
     st.subheader("Top 10 Diagnoses by Product Type")
     
+    
     # Group by Product Type and Diagnosis
     diagnosis_summary = claim_transformed.groupby(['Product Type', 'Diagnosis']).agg(
         Amount=('Sum of Billed', 'sum'),
-        Qty=('Sum of Billed', 'count')  # Count rows
+        Qty=('Sum of Billed', 'count')
     ).reset_index()
     
     # Convert Amount to millions
@@ -523,7 +524,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             .head(10)
         )
     
-        # Create horizontal bar chart with Plotly
+        # Create grouped bar chart with Plotly
         fig = go.Figure()
     
         # Add Qty bar
@@ -532,7 +533,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             x=top_10['Qty'],
             name='Qty',
             orientation='h',
-            marker_color='skyblue'
+            marker_color=colors[0]  # Blue
         ))
     
         # Add Amount bar
@@ -541,20 +542,22 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             x=top_10['Amount'],
             name='Amount (in millions)',
             orientation='h',
-            marker_color='lightcoral'
+            marker_color=colors[1]  # Lighter blue
         ))
     
-        # Layout and design
+        # Layout settings
         fig.update_layout(
-            barmode='group',  # <- Ini yang penting agar tidak stacked
+            barmode='group',
             yaxis={'categoryorder': 'total ascending'},
             xaxis_title='Value',
             height=400,
             margin=dict(t=40, b=40),
             legend_title_text='',
             font=dict(size=12),
+            bargap=0.2
         )
     
         st.plotly_chart(fig, use_container_width=True)
     
-
+        
+    
