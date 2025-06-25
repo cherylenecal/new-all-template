@@ -279,37 +279,37 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
 
     def format_claim_ratio_table(df):
         html = "<style>"
-        html += "table { border-collapse: collapse; width: 100%; }"
-        html += "th, td { border: 1px solid #fcfcfa; padding: 8px; text-align: center; }"
-        html += "th { background-color: #0070C0; font-weight: bold; color: white; }"
+        html += "table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; }"
         html += "tr:nth-child(even) { background-color: #fcfcfa; }"
         html += "tr:hover { background-color: #ddd; }"
         html += "</style>"
         html += "<table>"
+    
         # Table headers
-        html += "<tr>"
+        html += "<thead><tr>"
         for col in df.columns:
-            html += f"<th>{col}</th>"
-        html += "</tr>"
+            html += f"<th style='border: 1px solid #333; background-color: #0070C0; color: white; padding: 8px; text-align: center;'>{col}</th>"
+        html += "</tr></thead><tbody>"
+    
         # Table rows
-        for index, row in df.iterrows():
+        for _, row in df.iterrows():
             html += "<tr>"
             for col in df.columns:
-                # Basic formatting for numbers (adjust as needed)
                 value = row[col]
                 if isinstance(value, (int, float)):
-                     # Format CR as percentage
                     if col == 'CR' and not pd.isna(value):
-                         html += f"<td>{value:.2f}%</td>"
+                        content = f"{value:.2f}%"
                     elif col == 'Est Claim' and not pd.isna(value):
-                        html += f"<td>{value:,.2f}</td>"
+                        content = f"{value:,.2f}"
                     else:
-                         html += f"<td>{value:,.2f}</td>" # Example formatting for other numerical columns
+                        content = f"{value:,.2f}"
                 else:
-                    html += f"<td>{value}</td>"
+                    content = value
+                html += f"<td style='border: 1px solid #333; color: black; padding: 8px; text-align: center;'>{content}</td>"
             html += "</tr>"
-        html += "</table>"
+        html += "</tbody></table>"
         return html
+
 
     st.markdown(format_claim_ratio_table(summary_cr_df), unsafe_allow_html=True)
     
