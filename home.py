@@ -655,9 +655,10 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
     st.plotly_chart(fig, use_container_width=True)
 
-    # Section 7: Top 10 Employees by Claims
+    # Section 7: Top 10 Employees by Number of Claims
     st.subheader("Top 10 Employees by Number of Claims")
     
+    # Copy dari claim_transformed
     df_emp = claim_transformed.copy()
     
     # Group and summarize
@@ -670,63 +671,67 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
               .reset_index()
     )
     
-    # Ambil top 10
-    top_10_emp_summary = top_10_emp_summary.sort_values(by='Total_Claims', ascending=False).head(10)
+    # Cek jika kosong
+    if top_10_emp_summary.empty:
+        st.warning("Tidak ada data Employee yang bisa ditampilkan.")
+    else:
+        # Ambil top 10
+        top_10_emp_summary = top_10_emp_summary.sort_values(by='Total_Claims', ascending=False).head(10)
     
-    # Rename & Reorder
-    top_10_emp_summary = top_10_emp_summary.rename(columns={
-        'Emp Name': 'Employee',
-        'Plan': 'Plan',
-        'Total_Claims': 'Total Claims',
-        'Total_Billed': 'Total Billed'
-    })[['Employee', 'Plan', 'Total Claims', 'Total Billed']]
+        # Rename & Reorder
+        top_10_emp_summary = top_10_emp_summary.rename(columns={
+            'Emp Name': 'Employee',
+            'Plan': 'Plan',
+            'Total_Claims': 'Total Claims',
+            'Total_Billed': 'Total Billed'
+        })[['Employee', 'Plan', 'Total Claims', 'Total Billed']]
     
-    # Format angka
-    top_10_emp_summary['Total Claims'] = top_10_emp_summary['Total Claims'].map('{:,.0f}'.format)
-    top_10_emp_summary['Total Billed'] = top_10_emp_summary['Total Billed'].map('{:,.2f}'.format)
+        # Format angka
+        top_10_emp_summary['Total Claims'] = top_10_emp_summary['Total Claims'].map('{:,.0f}'.format)
+        top_10_emp_summary['Total Billed'] = top_10_emp_summary['Total Billed'].map('{:,.2f}'.format)
     
-    # Convert to HTML table with custom styling
-    def render_styled_table(df):
-        html = """
-        <style>
-        table {
-            border-collapse: collapse;
-            width: 100%;
-            font-family: Arial, sans-serif;
-        }
-        th {
-            background-color: #0067B1;
-            color: white;
-            padding: 8px;
-            text-align: center;
-        }
-        td {
-            padding: 8px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-            color: black;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        </style>
-        <table>
-            <thead>
-                <tr>
-        """
+        # Convert to styled HTML table
+        def render_styled_table(df):
+            html = """
+            <style>
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                font-family: Arial, sans-serif;
+            }
+            th {
+                background-color: #0067B1;
+                color: white;
+                padding: 10px;
+                text-align: center;
+            }
+            td {
+                padding: 10px;
+                text-align: center;
+                border-bottom: 1px solid #ddd;
+                color: black;
+            }
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            </style>
+            <table>
+                <thead>
+                    <tr>
+            """
     
-        for col in df.columns:
-            html += f"<th>{col}</th>"
-        html += "</tr></thead><tbody>"
+            for col in df.columns:
+                html += f"<th>{col}</th>"
+            html += "</tr></thead><tbody>"
     
-        for _, row in df.iterrows():
-            html += "<tr>"
-            for item in row:
-                html += f"<td>{item}</td>"
-            html += "</tr>"
+            for _, row in df.iterrows():
+                html += "<tr>"
+                for item in row:
+                    html += f"<td>{item}</td>"
+                html += "</tr>"
     
-        html += "</tbody></table>"
-        return html
+            html += "</tbody></table>"
+            return html
     
-    # Render styled table
-    st.markdown(render_styled_table(top_10_emp_summary), unsafe_allow_html=True)
+        # Render to Streamlit
+        st.markdown(render_styled_table(top_10_emp_summary), unsafe_allow_html=True)
