@@ -657,27 +657,25 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
 
     # Section 7: Top 10 Employee
     st.subheader("Top 10 Employees by Number of Claims")
-    # Copy from claim_transformed
+
     df_emp = claim_transformed.copy()
     
-    # Group and summarize
+    # Group
     top_10_emp_summary = (
         df_emp.groupby(['Emp Name', 'Plan'])
-              .agg(
-                  Total_Claims=('Emp Name', 'count'),
-                  Total_Billed=('Sum of Billed', 'sum')
-              )
-              .reset_index()
+        .agg(
+            Total_Claims=('Emp Name', 'count'),
+            Total_Billed=('Sum of Billed', 'sum')
+        )
+        .reset_index()
     )
     
-    # Check if empty
     if top_10_emp_summary.empty:
         st.warning("No employee data available.")
     else:
-        # Get top 10
         top_10_emp_summary = top_10_emp_summary.sort_values(by='Total_Claims', ascending=False).head(10)
     
-        # Rename & reorder
+        # Rename and reorder
         top_10_emp_summary = top_10_emp_summary.rename(columns={
             'Emp Name': 'Employee',
             'Plan': 'Plan',
@@ -689,7 +687,11 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         top_10_emp_summary['Total Claims'] = top_10_emp_summary['Total Claims'].map('{:,.0f}'.format)
         top_10_emp_summary['Total Billed'] = top_10_emp_summary['Total Billed'].map('{:,.2f}'.format)
     
-        # Styled HTML table with borders
+        # Debug check before render
+        st.write("Preview of Table Data:")
+        st.write(top_10_emp_summary)
+    
+        # Render as HTML with border
         def render_styled_table(df):
             html = """
             <style>
@@ -731,5 +733,5 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             html += "</tbody></table>"
             return html
     
-        # Show in Streamlit
+        # Display styled table
         st.markdown(render_styled_table(top_10_emp_summary), unsafe_allow_html=True)
