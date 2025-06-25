@@ -660,25 +660,26 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
 
     df_emp = claim_transformed.copy()
     
-    # Group
+    # Group and summarize
     top_10_emp_summary = (
         df_emp.groupby(['Emp Name', 'Plan'])
-        .agg(
-            Total_Claims=('Emp Name', 'count'),
-            Total_Billed=('Sum of Billed', 'sum')
-        )
-        .reset_index()
+              .agg(
+                  Total_Claims=('Emp Name', 'count'),
+                  Total_Billed=('Sum of Billed', 'sum')
+              )
+              .reset_index()
     )
     
+    # Show warning if empty
     if top_10_emp_summary.empty:
         st.warning("No employee data available.")
     else:
+        # Sort & take top 10
         top_10_emp_summary = top_10_emp_summary.sort_values(by='Total_Claims', ascending=False).head(10)
     
         # Rename and reorder
         top_10_emp_summary = top_10_emp_summary.rename(columns={
             'Emp Name': 'Employee',
-            'Plan': 'Plan',
             'Total_Claims': 'Total Claims',
             'Total_Billed': 'Total Billed'
         })[['Employee', 'Plan', 'Total Claims', 'Total Billed']]
@@ -687,11 +688,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         top_10_emp_summary['Total Claims'] = top_10_emp_summary['Total Claims'].map('{:,.0f}'.format)
         top_10_emp_summary['Total Billed'] = top_10_emp_summary['Total Billed'].map('{:,.2f}'.format)
     
-        # Debug check before render
-        st.write("Preview of Table Data:")
-        st.write(top_10_emp_summary)
-    
-        # Render as HTML with border
+        # Styled HTML table with thick visible borders
         def render_styled_table(df):
             html = """
             <style>
@@ -701,7 +698,8 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
                 font-family: Arial, sans-serif;
             }
             th, td {
-                border: 1px solid #999;
+                border: 2px solid #333;
+                border-style: solid;
                 padding: 10px;
                 text-align: center;
             }
@@ -713,7 +711,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
                 color: black;
             }
             tr:nth-child(even) {
-                background-color: #f9f9f9;
+                background-color: #f5f5f5;
             }
             </style>
             <table>
@@ -733,5 +731,5 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             html += "</tbody></table>"
             return html
     
-        # Display styled table
+        # Render in Streamlit
         st.markdown(render_styled_table(top_10_emp_summary), unsafe_allow_html=True)
