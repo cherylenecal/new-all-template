@@ -254,6 +254,11 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
 
     # Function to display metric with formatted text
     def display_metric(metric_name, metric_value):
+        # Coba ubah ke float lalu ke integer jika bisa, agar menghapus desimal
+        try:
+            formatted_value = f"{int(float(str(metric_value).replace(',', ''))):,}"
+        except:
+            formatted_value = metric_value  # fallback ke original
         st.markdown(f"<p style='color: #0067B1; font-size: 18px; margin-bottom: 0;'>{metric_name}</p>"
                     f"<p style='color: #0067B1; font-size: 24px; font-weight: bold; margin-top: 0;'>{metric_value}</p>",
                     unsafe_allow_html=True)
