@@ -318,46 +318,42 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             html += "</tr>"
         html += "</tbody></table>"
         return html
-
-
-
     st.markdown(format_claim_ratio_table(summary_cr_df), unsafe_allow_html=True)
     def save_table_as_image(df, output_file):
-        # Buat figure dan axis tanpa tampilan sumbu
-        fig, ax = plt.subplots(figsize=(len(df.columns) * 2, len(df) * 0.5 + 1))
-        ax.axis('off')
+        # Buat figure/table axis
+        fig_table, ax_table = plt.subplots(
+            figsize=(len(df.columns) * 2, len(df) * 0.5 + 1),
+            dpi=150
+        )
+        ax_table.axis('off')
     
-        # Buat tabel di tengah axis
-        tbl = ax.table(
+        # Buat tabel di tengah
+        tbl = ax_table.table(
             cellText=df.values,
             colLabels=df.columns,
             cellLoc='center',
             loc='center'
         )
     
-        # Styling header
+        # Styling border dan background
         for (row, col), cell in tbl.get_celld().items():
             cell.set_edgecolor('black')
             cell.set_linewidth(1)
-            if row == 0:  # header
+            if row == 0:
                 cell.set_facecolor('#0070C0')
                 cell.get_text().set_color('white')
                 cell.get_text().set_weight('bold')
             else:
-                # alternating row color
-                if row % 2 == 0:
-                    cell.set_facecolor('#fcfcfa')
-                else:
-                    cell.set_facecolor('white')
+                cell.set_facecolor('#fcfcfa' if row % 2 == 0 else 'white')
                 cell.get_text().set_color('black')
     
         tbl.auto_set_font_size(False)
         tbl.set_fontsize(11)
-        tbl.scale(1, 1.5)  # sesuaikan tinggi baris
+        tbl.scale(1, 1.5)
     
         plt.tight_layout()
-        fig.savefig(output_file, bbox_inches='tight')
-        plt.close(fig)
+        fig_table.savefig(output_file, bbox_inches='tight')
+        plt.close(fig_table)
     # Tampilkan HTML seperti biasa
     st.markdown(format_claim_ratio_table(summary_cr_df), unsafe_allow_html=True)
     
