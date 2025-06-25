@@ -284,16 +284,17 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
 
     def format_claim_ratio_table(df):
         html = "<style>"
-        html += "table { border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; }"
+        html += "table { border-collapse: collapse; width: 100%; }"
+        html += "th, td { border: 1px solid #333; padding: 8px; text-align: center; color: black; }"
+        html += "th { background-color: #0070C0; font-weight: bold; color: white; }"
         html += "tr:nth-child(even) { background-color: #fcfcfa; }"
         html += "tr:hover { background-color: #ddd; }"
         html += "</style>"
-        html += "<table>"
+        html += "<table><thead><tr>"
     
         # Table headers
-        html += "<thead><tr>"
         for col in df.columns:
-            html += f"<th style='border: 1px solid #333; background-color: #0070C0; color: white; padding: 8px; text-align: center;'>{col}</th>"
+            html += f"<th>{col}</th>"
         html += "</tr></thead><tbody>"
     
         # Table rows
@@ -305,15 +306,16 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
                     if col == 'CR' and not pd.isna(value):
                         content = f"{value:.2f}%"
                     elif col == 'Est Claim' and not pd.isna(value):
-                        content = f"{value:,}"
+                        content = f"{value:,.2f}"
                     else:
-                        content = f"{value:,}"
+                        content = f"{int(value):,}"  # Pastikan bulat tanpa desimal
                 else:
                     content = value
-                html += f"<td style='border: 1px solid #333; color: black; padding: 8px; text-align: center;'>{content}</td>"
+                html += f"<td>{content}</td>"
             html += "</tr>"
         html += "</tbody></table>"
         return html
+
 
 
     st.markdown(format_claim_ratio_table(summary_cr_df), unsafe_allow_html=True)
