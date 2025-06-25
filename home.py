@@ -376,7 +376,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             textprops=dict(color="white", fontsize=12)
         )
         ax.set_title("Claim Count per Membership", color='black')
-        pie_path = "output/images/section2_membership.png"
+        pie_path = "section2_membership.png"
         fig.savefig(pie_path, bbox_inches='tight')
         st.pyplot(fig)
         plt.close(fig)
@@ -398,7 +398,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         ax3.set_ylabel("Number of Claims", color='black')
         ax3.set_title("Claim Count per Plan", color='black')
         plt.xticks(rotation=45, ha='right')
-        bar_path = "output/images/section3_plan.png"
+        bar_path = "section3_plan.png"
         fig3.savefig(bar_path, bbox_inches='tight')
         st.pyplot(fig3)
         plt.close(fig3)
@@ -430,7 +430,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         plt.xticks(rotation=45, ha='right')
         plt.tight_layout()
     
-        month_prod_path = "output/images/section4_month_product.png"
+        month_prod_path = "section4_month_product.png"
         plt.savefig(month_prod_path, bbox_inches='tight')
         st.pyplot(plt.gcf())
         plt.close()
@@ -467,7 +467,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         ax.legend(loc='lower right')
         plt.tight_layout()
     
-        path = f"output/images/section5_diag_{product}.png"
+        path = f"section5_diag_{product}.png"
         fig.savefig(path, bbox_inches='tight')
         st.pyplot(fig)
         plt.close(fig)
@@ -498,7 +498,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         ax.legend(loc='lower right')
         plt.tight_layout()
     
-        path = f"output/images/section6_tp_{claim_type}.png"
+        path = f"section6_tp_{claim_type}.png"
         fig.savefig(path, bbox_inches='tight')
         st.pyplot(fig)
         plt.close(fig)
