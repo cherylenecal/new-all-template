@@ -357,17 +357,13 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
     # Simpan table ke PNG tanpa Kaleido
     save_table_as_image(summary_cr_df, "claim_ratio_table.png")
-    
 
+    
     # Section 2: Claim per Membership (Pie Chart)
     st.subheader("Claim Count per Membership Type")
     pie_path = None
-    # Cek apakah kolom 'Membership' tersedia
     if 'Membership' in claim_transformed.columns:
-        label_map = {"1. EMP": "Employee", "2. SPO": "Spouse", "3. CHI": "Children"}
-        claim_transformed['Membership Label'] = claim_transformed['Membership'].map(label_map)
-        mc = claim_transformed['Membership Label'].value_counts()
-        labels, sizes = mc.index.tolist(), mc.values.tolist()
+        # … hitung mc, labels, sizes …
         fig, ax = plt.subplots(figsize=(4,4))
         wedges, texts, autotexts = ax.pie(
             sizes, labels=labels,
@@ -376,29 +372,25 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             textprops=dict(color="white", fontsize=12)
         )
         ax.set_title("Claim Count per Membership", color='black')
-        pie_path = "section2_membership.png"
+        pie_path = "section2_membership.png"              # <= simpan di cwd
         fig.savefig(pie_path, bbox_inches='tight')
         st.pyplot(fig)
         plt.close(fig)
     else:
         st.warning("'Membership' column not found")
     
-    
     # Section 3: Claim Count per Plan
     st.subheader("Claim Count per Plan")
     bar_path = None
-    # Cek apakah kolom 'Plan' tersedia
     if 'Plan' in claim_transformed.columns:
-        pc = claim_transformed['Plan'].value_counts().sort_index()
-        plans, counts = pc.index.tolist(), pc.values.tolist()
-    
-        fig3, ax3 = plt.subplots(figsize=(6, 4))
+        # … hitung pc, plans, counts …
+        fig3, ax3 = plt.subplots(figsize=(6,4))
         bars = ax3.bar(plans, counts, color='#1f77b4')
         ax3.bar_label(bars, labels=[f"{v:,}" for v in counts], padding=3, color='black')
         ax3.set_ylabel("Number of Claims", color='black')
         ax3.set_title("Claim Count per Plan", color='black')
         plt.xticks(rotation=45, ha='right')
-        bar_path = "section3_plan.png"
+        bar_path = "section3_plan.png"                    # <= simpan di cwd
         fig3.savefig(bar_path, bbox_inches='tight')
         st.pyplot(fig3)
         plt.close(fig3)
@@ -572,25 +564,26 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         # Render in Streamlit
         st.markdown(render_styled_table(top_10_emp_summary), unsafe_allow_html=True)
 
-    # PPT output directory
+    # Generate PPT 
     st.markdown("---")
     st.subheader("Generate PowerPoint Report")
     ppt_filename_input = st.text_input("Enter PPT file name:", "Claim_Report")
-    ppt_filename = ppt_filename_input.strip() or "Claim_Report"
-    ppt_filepath = os.path.join("output", f"{ppt_filename}.pptx")
+    ppt_filename = (ppt_filename_input.strip() or "Claim_Report") + ".pptx"
+    ppt_filepath = ppt_filename                              # <= simpan di cwd
     
     def create_ppt(path):
         prs = Presentation("template.pptx")
-        # Slide for pie chart
+        # Pie chart slide
         if pie_path:
-            slide2 = prs.slides.add_slide(prs.slide_layouts[1])
-            slide2.shapes.title.text = "Claim Count per Membership Type"
-            slide2.shapes.add_picture(pie_path, Inches(1), Inches(1.5), width=Inches(6))
-        # Slide for bar chart
+            slide = prs.slides.add_slide(prs.slide_layouts[1])
+            slide.shapes.title.text = "Claim Count per Membership Type"
+            slide.shapes.add_picture(pie_path, Inches(1), Inches(1.5), width=Inches(6))
+        # Bar chart slide
         if bar_path:
-            slide3 = prs.slides.add_slide(prs.slide_layouts[1])
-            slide3.shapes.title.text = "Claim Count per Plan"
-            slide3.shapes.add_picture(bar_path, Inches(1), Inches(1.5), width=Inches(6))
+            slide = prs.slides.add_slide(prs.slide_layouts[1])
+            slide.shapes.title.text = "Claim Count per Plan"
+            slide.shapes.add_picture(bar_path, Inches(1), Inches(1.5), width=Inches(6))
+        # … tambahkan slide lain sesuai kebutuhan …
         prs.save(path)
     
     if st.button("Generate PPT"):
@@ -600,6 +593,6 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             st.download_button(
                 label="Download PPT",
                 data=f,
-                file_name=f"{ppt_filename}.pptx",
+                file_name=ppt_filename,
                 mime="application/vnd.openxmlformats-officedocument.presentationml.presentation"
             )
