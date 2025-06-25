@@ -5,8 +5,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
-import imgkit
-import plotly.io as pio
 from pptx.util import Inches
 
 # Claim data functions
