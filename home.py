@@ -386,230 +386,104 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     else:
         st.warning("'Plan' column not found")
 
-    # Section 4: Claim Billed by Month and Product Type
+    # ─── Section 4: Claim Billed by Month and Product Type ────────────────────────
     st.subheader("Claim Billed by Month and Product Type")
-    
-    # Ensure 'Settled Date' and 'Product Type' columns exist
+    month_prod_path = None
     if 'Settled Date' in claim_transformed.columns and 'Product Type' in claim_transformed.columns:
-        # Convert 'Settled Date' to datetime and create month-year column
         claim_transformed['Settled Month'] = claim_transformed['Settled Date'].dt.strftime("%b'%y")
-    
-        # Group by month and product type and sum the billed amount
-        monthly_billed_by_product = claim_transformed.groupby(['Settled Month', 'Product Type'])['Sum of Billed'].sum().reset_index()
-    
-        # Get the correct month order
-        month_order = pd.to_datetime(claim_transformed['Settled Date']).dt.to_period('M').sort_values().unique().strftime("%b'%y").tolist()
-    
-        # Convert 'Settled Month' to categorical with the defined order for correct sorting
-        monthly_billed_by_product['Settled Month'] = pd.Categorical(monthly_billed_by_product['Settled Month'], categories=month_order, ordered=True)
-    
-        # Sort by month
-        monthly_billed_by_product = monthly_billed_by_product.sort_values('Settled Month')
-    
-        # Create the grouped bar chart using Plotly
-        fig = px.bar(monthly_billed_by_product,
-                     x='Settled Month',
-                     y='Sum of Billed',
-                     color='Product Type',
-                     barmode='group',  # Use 'group' for grouped bars
-                     labels={'Settled Month': 'Settled Month', 'Sum of Billed': 'Sum of Billed Amount'},
-                     title='Claim Billed by Month and Product Type')
-    
-        # Update layout for better appearance
-        fig.update_layout(
-            xaxis_title="Settled Month",
-            yaxis_title="Sum of Billed Amount",
-            margin=dict(t=60, b=10), # Reduce bottom margin to bring chart closer to the table
-            font=dict(color='black'),
-            xaxis=dict(
-                title_font=dict(color='black'),
-                tickfont=dict(color='black')
-            ),
-            yaxis=dict(
-                title_font=dict(color='black'),
-                tickfont=dict(color='black')
-            ),
-            legend_title_text='Product Type',
-            height=400 # Adjust height if needed
+        mbp = (
+            claim_transformed
+            .groupby(['Settled Month', 'Product Type'])['Sum of Billed']
+            .sum()
+            .reset_index()
         )
-        fig.write_image("month_product_bar.png")
+        # Urutkan bulan
+        order = pd.to_datetime(claim_transformed['Settled Date']).dt.to_period('M') \
+                .sort_values().unique().strftime("%b'%y")
+        mbp['Settled Month'] = pd.Categorical(mbp['Settled Month'], categories=order, ordered=True)
+        mbp = mbp.sort_values('Settled Month')
     
-        # Display the chart
-        st.plotly_chart(fig, use_container_width=True) # use_container_width=True makes it responsive
+        # Pivot jadi wide
+        pivot = mbp.pivot(index='Settled Month', columns='Product Type', values='Sum of Billed').fillna(0)
+        pivot.plot(kind='bar', figsize=(8,4))
+        plt.title("Claim Billed by Month and Product Type")
+        plt.ylabel("Sum of Billed")
+        plt.xticks(rotation=45, ha='right')
+        plt.tight_layout()
     
-        # Display the detailed table below the chart
+        month_prod_path = "output/images/section4_month_product.png"
+        plt.savefig(month_prod_path, bbox_inches='tight')
+        st.pyplot(plt.gcf())
+        plt.close()
+    
+        # Tabel detail
         st.subheader("Claim Billed Details by Month and Product Type")
-        # Pivot the table for better readability if needed, or display as is
-        # Pivoting to show months as index and product types as columns
-        pivot_table = monthly_billed_by_product.pivot_table(index='Settled Month', columns='Product Type', values='Sum of Billed', fill_value=0).reset_index()
-        pivot_table.columns.name = None # Remove the columns name 'Product Type'
-    
-        # Re-sort the pivoted table by the ordered month index
-        pivot_table['Settled Month'] = pd.Categorical(pivot_table['Settled Month'], categories=month_order, ordered=True)
-        pivot_table = pivot_table.sort_values('Settled Month')
-        
-        st.dataframe(pivot_table)
-    
+        st.dataframe(pivot.reset_index(), use_container_width=True)
     else:
-        st.warning("'Settled Date' or 'Product Type' column not found in Claim Data. Cannot generate Section 4 visualization.")
-
-    # Section 5: Top 10 Diagnoses by Product Type
+        st.warning("'Settled Date' or 'Product Type' column not found")
+    
+    # ─── Section 5: Top 10 Diagnoses by Product Type ──────────────────────────────
     st.subheader("Top 10 Diagnoses by Product Type")
-    
-    # Warna
-    color_amount = '#1f77b4'  # Dark blue
-    color_qty = '#a6c8ea'     # Light blue
-    
-    # Grouping
-    diagnosis_summary = claim_transformed.groupby(['Product Type', 'Diagnosis']).agg(
-        Amount=('Sum of Billed', 'sum'),
-        Qty=('Sum of Billed', 'count')
-    ).reset_index()
-    
-    # Scale to millions
-    diagnosis_summary['Amount'] = diagnosis_summary['Amount'] / 1_000_000
-    
-    # Loop per product type
-    for product in diagnosis_summary['Product Type'].unique():
-        st.markdown(f"### {product}")
-    
-        top_10 = (
-            diagnosis_summary[diagnosis_summary['Product Type'] == product]
-            .sort_values(by='Amount', ascending=False)
-            .head(10)
+    diag_path = []
+    for product in claim_transformed['Product Type'].unique():
+        dfp = (
+            claim_transformed[claim_transformed['Product Type']==product]
+            .groupby('Diagnosis')['Sum of Billed']
+            .agg(['sum','count'])
+            .rename(columns={'sum':'Amount','count':'Qty'})
+            .reset_index()
         )
+        dfp['Amount'] /= 1_000_000
+        top10 = dfp.sort_values('Amount', ascending=False).head(10).iloc[::-1]  # flip for top-down
     
-        fig = go.Figure()
+        fig, ax = plt.subplots(figsize=(6,4))
+        ax.barh(top10['Diagnosis'], top10['Qty'], color='#a6c8ea', label='Qty')
+        ax.barh(top10['Diagnosis'], top10['Amount'], left=0, color='#1f77b4', label='Amount (mil)', alpha=0.7)
+        # labels
+        for i,(qty,amt) in enumerate(zip(top10['Qty'], top10['Amount'])):
+            ax.text(qty, i, f'{qty:,}', va='center', ha='left', color='black')
+            ax.text(amt, i, f'{amt:,.1f}', va='center', ha='left', color='black')
+        ax.set_title(f"Top 10 Diagnoses: {product}")
+        ax.set_xlabel("Value")
+        ax.legend(loc='lower right')
+        plt.tight_layout()
     
-        # Trace 1: Qty
-        fig.add_trace(go.Bar(
-            y=top_10['Diagnosis'],
-            x=top_10['Qty'],
-            name='Qty',
-            orientation='h',
-            marker_color=color_qty,
-            text=[f"{v:,}" for v in top_10['Qty']],
-            textposition='outside',
-            textfont=dict(color='black'),
-            legendgroup='qty',
-            legendrank=2
-        ))
+        path = f"output/images/section5_diag_{product}.png"
+        fig.savefig(path, bbox_inches='tight')
+        st.pyplot(fig)
+        plt.close(fig)
+        diag_path.append((product,path))
     
-        # Trace 2: Amount
-        fig.add_trace(go.Bar(
-            y=top_10['Diagnosis'],
-            x=top_10['Amount'],
-            name='Amount (in millions)',
-            orientation='h',
-            marker_color=color_amount,
-            text=[f"{v:,.2f}" if v < 1 else f"{v:,.0f}" for v in top_10['Amount']],
-            textposition='outside',
-            textfont=dict(color='black'),
-            legendgroup='amount',
-            legendrank=1
-        ))
-    
-        # Layout
-        fig.update_layout(
-            barmode='group',
-            yaxis=dict(
-                categoryorder='total ascending',
-                title='Diagnosis',
-                title_font=dict(color='black'),
-                tickfont=dict(color='black')
-            ),
-            xaxis=dict(
-                title='Value',
-                title_font=dict(color='black'),
-                tickfont=dict(color='black')
-            ),
-            font=dict(color='black'),  # General text color (legend, etc.)
-            legend_title_text='',
-            height=400,
-            margin=dict(t=40, b=40),
-            bargap=0.2
-        )
-        fig.write_image("billed_per_product.png")
-        st.plotly_chart(fig, use_container_width=True)
-
-    # Section 6: Top 10 Treatment Places by Claim Type
+    # ─── Section 6: Top 10 Treatment Places by Claim Type ────────────────────────
     st.subheader("Top 10 Treatment Places by Claim Type")
-
-    # Warna tetap sama
-    color_amount = '#1f77b4'  # Dark blue
-    color_qty = '#a6c8ea'     # Light blue
-    
-    # Grouping
-    treatment_place_summary = claim_transformed.groupby(['Claim Type', 'Treatment Place']).agg(
-        Amount=('Sum of Billed', 'sum'),
-        Qty=('Sum of Billed', 'count')
-    ).reset_index()
-    
-    # Scale to millions
-    treatment_place_summary['Amount'] = treatment_place_summary['Amount'] / 1_000_000
-    
-    # Loop per Claim Type
-    for claim_type in treatment_place_summary['Claim Type'].unique():
-        st.markdown(f"### {claim_type}")
-    
-        top_10 = (
-            treatment_place_summary[treatment_place_summary['Claim Type'] == claim_type]
-            .sort_values(by='Amount', ascending=False)
-            .head(10)
+    tp_path = []
+    for claim_type in claim_transformed['Claim Type'].unique():
+        dfp = (
+            claim_transformed[claim_transformed['Claim Type']==claim_type]
+            .groupby('Treatment Place')['Sum of Billed']
+            .agg(['sum','count'])
+            .rename(columns={'sum':'Amount','count':'Qty'})
+            .reset_index()
         )
+        dfp['Amount'] /= 1_000_000
+        top10 = dfp.sort_values('Amount', ascending=False).head(10).iloc[::-1]
     
-        fig = go.Figure()
+        fig, ax = plt.subplots(figsize=(6,4))
+        ax.barh(top10['Treatment Place'], top10['Qty'], color='#a6c8ea', label='Qty')
+        ax.barh(top10['Treatment Place'], top10['Amount'], left=0, color='#1f77b4', label='Amount (mil)', alpha=0.7)
+        for i,(qty,amt) in enumerate(zip(top10['Qty'], top10['Amount'])):
+            ax.text(qty, i, f'{qty:,}', va='center', ha='left', color='black')
+            ax.text(amt, i, f'{amt:,.1f}', va='center', ha='left', color='black')
+        ax.set_title(f"Top 10 Treatment Places: {claim_type}")
+        ax.set_xlabel("Value")
+        ax.legend(loc='lower right')
+        plt.tight_layout()
     
-        # Trace 1: Qty (first → appears below)
-        fig.add_trace(go.Bar(
-            y=top_10['Treatment Place'],
-            x=top_10['Qty'],
-            name='Qty',
-            orientation='h',
-            marker_color=color_qty,
-            text=[f"{v:,}" for v in top_10['Qty']],
-            textposition='outside',
-            textfont=dict(color='black'),
-            legendgroup='qty',
-            legendrank=2
-        ))
-    
-        # Trace 2: Amount (second → appears above)
-        fig.add_trace(go.Bar(
-            y=top_10['Treatment Place'],
-            x=top_10['Amount'],
-            name='Amount (in millions)',
-            orientation='h',
-            marker_color=color_amount,
-            text=[f"{v:,.2f}" if v < 1 else f"{v:,.0f}" for v in top_10['Amount']],
-            textposition='outside',
-            textfont=dict(color='black'),
-            legendgroup='amount',
-            legendrank=1
-        ))
-    
-        # Layout
-        fig.update_layout(
-            barmode='group',
-            yaxis=dict(
-                categoryorder='total ascending',
-                title='Treatment Place',
-                title_font=dict(color='black'),
-                tickfont=dict(color='black')
-            ),
-            xaxis=dict(
-                title='Value',
-                title_font=dict(color='black'),
-                tickfont=dict(color='black')
-            ),
-            font=dict(color='black'),
-            legend_title_text='',
-            height=400,
-            margin=dict(t=40, b=40),
-            bargap=0.2
-        )
-    
-    st.plotly_chart(fig, use_container_width=True)
+        path = f"output/images/section6_tp_{claim_type}.png"
+        fig.savefig(path, bbox_inches='tight')
+        st.pyplot(fig)
+        plt.close(fig)
+        tp_path.append((claim_type,path))
 
     # Section 7: Top 10 Employee
     st.subheader("Top 10 Employees by Number of Claims")
