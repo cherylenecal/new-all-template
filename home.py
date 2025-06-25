@@ -322,21 +322,46 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
 
 
     st.markdown(format_claim_ratio_table(summary_cr_df), unsafe_allow_html=True)
-    # save to image
     def save_table_as_image(df, output_file):
-        fig = go.Figure(data=[go.Table(
-            header=dict(values=list(df.columns),
-                        fill_color='#0070C0',
-                        align='center',
-                        font=dict(color='white', size=12)),
-            cells=dict(values=[df[col] for col in df.columns],
-                       fill_color='white',
-                       align='center',
-                       font=dict(color='black', size=11))
-        )])
-        
-        fig.update_layout(margin=dict(l=0, r=0, t=20, b=0), height=400)
-        fig.write_image(output_file)  # Requires kaleido
+        # Buat figure dan axis tanpa tampilan sumbu
+        fig, ax = plt.subplots(figsize=(len(df.columns) * 2, len(df) * 0.5 + 1))
+        ax.axis('off')
+    
+        # Buat tabel di tengah axis
+        tbl = ax.table(
+            cellText=df.values,
+            colLabels=df.columns,
+            cellLoc='center',
+            loc='center'
+        )
+    
+        # Styling header
+        for (row, col), cell in tbl.get_celld().items():
+            cell.set_edgecolor('black')
+            cell.set_linewidth(1)
+            if row == 0:  # header
+                cell.set_facecolor('#0070C0')
+                cell.get_text().set_color('white')
+                cell.get_text().set_weight('bold')
+            else:
+                # alternating row color
+                if row % 2 == 0:
+                    cell.set_facecolor('#fcfcfa')
+                else:
+                    cell.set_facecolor('white')
+                cell.get_text().set_color('black')
+    
+        tbl.auto_set_font_size(False)
+        tbl.set_fontsize(11)
+        tbl.scale(1, 1.5)  # sesuaikan tinggi baris
+    
+        plt.tight_layout()
+        fig.savefig(output_file, bbox_inches='tight')
+        plt.close(fig)
+    # Tampilkan HTML seperti biasa
+    st.markdown(format_claim_ratio_table(summary_cr_df), unsafe_allow_html=True)
+    
+    # Simpan table ke PNG tanpa Kaleido
     save_table_as_image(summary_cr_df, "claim_ratio_table.png")
     
 
