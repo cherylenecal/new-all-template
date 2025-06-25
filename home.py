@@ -690,46 +690,35 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         # Styled HTML table with thick visible borders
         def render_styled_table(df):
-            html = """
-            <style>
-            table {
-                border-collapse: collapse;
-                width: 100%;
-                font-family: Arial, sans-serif;
-            }
-            th, td {
-                border: 2px solid #333;
-                border-style: solid;
-                padding: 10px;
-                text-align: center;
-            }
-            th {
-                background-color: #0067B1;
-                color: white;
-            }
-            td {
-                color: black;
-            }
-            tr:nth-child(even) {
-                background-color: #f5f5f5;
-            }
-            </style>
-            <table>
-                <thead>
-                    <tr>
-            """
-            for col in df.columns:
-                html += f"<th>{col}</th>"
-            html += "</tr></thead><tbody>"
+        html = """
+        <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-family: Arial, sans-serif;
+        }
+        tr:nth-child(even) {
+            background-color: #f5f5f5;
+        }
+        </style>
+        <table>
+            <thead>
+                <tr>
+        """
+        # Tambahkan header dengan inline border
+        for col in df.columns:
+            html += f"<th style='border: 1px solid #333; background-color: #0067B1; color: white; padding: 8px;'>{col}</th>"
+        html += "</tr></thead><tbody>"
     
-            for _, row in df.iterrows():
-                html += "<tr>"
-                for item in row:
-                    html += f"<td>{item}</td>"
-                html += "</tr>"
+        # Tambahkan isi tabel dengan border per cell
+        for _, row in df.iterrows():
+            html += "<tr>"
+            for item in row:
+                html += f"<td style='border: 1px solid #333; color: black; padding: 8px; text-align: center;'>{item}</td>"
+            html += "</tr>"
     
-            html += "</tbody></table>"
-            return html
+        html += "</tbody></table>"
+        return html
     
         # Render in Streamlit
         st.markdown(render_styled_table(top_10_emp_summary), unsafe_allow_html=True)
