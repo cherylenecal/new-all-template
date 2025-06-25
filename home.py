@@ -342,7 +342,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
 
     # Section 2: Claim per Membership (Pie Chart)
     st.subheader("Claim Count per Membership Type")
-    
+    pie_path = None
     # Cek apakah kolom 'Membership' tersedia
     if 'Membership' in claim_transformed.columns:
         label_map = {"1. EMP": "Employee", "2. SPO": "Spouse", "3. CHI": "Children"}
@@ -359,7 +359,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         ax.set_title("Claim Count per Membership", color='black')
         pie_path = "output/images/section2_membership.png"
         fig.savefig(pie_path, bbox_inches='tight')
-        st.pyplot(fig2)
+        st.pyplot(fig)
         plt.close(fig)
     else:
         st.warning("'Membership' column not found")
@@ -367,62 +367,24 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
     # Section 3: Claim Count per Plan
     st.subheader("Claim Count per Plan")
-    
+    bar_path = None
     # Cek apakah kolom 'Plan' tersedia
     if 'Plan' in claim_transformed.columns:
-        # Hitung jumlah klaim per jenis Plan
-        plan_counts = claim_transformed['Plan'].value_counts().reset_index()
-        plan_counts.columns = ['Plan', 'Claim Count']
-        plan_counts = plan_counts.sort_values(by='Plan')
+        pc = claim_transformed['Plan'].value_counts().sort_index()
+        plans, counts = pc.index.tolist(), pc.values.tolist()
     
-        # Membuat bar chart
-        fig = go.Figure()
-    
-        # Tambahkan bar chart
-        fig.add_trace(go.Bar(
-            x=plan_counts['Plan'],
-            y=plan_counts['Claim Count'],
-            marker_color='#1f77b4'  # Warna biru
-        ))
-    
-        # Tambahkan teks jumlah di atas bar
-        for i in range(len(plan_counts)):
-            fig.add_annotation(
-                x=plan_counts['Plan'][i],
-                y=plan_counts['Claim Count'][i],
-                text=str(plan_counts['Claim Count'][i]),
-                showarrow=False,
-                yshift=10,  # Posisikan teks sedikit di atas bar
-                font=dict(
-                    color="black",  # Warna teks hitam
-                    size=12
-                )
-            )
-    
-        # Layout chart
-        fig.update_layout(
-            xaxis_title="Plan",
-            yaxis_title="Number of Claims",
-            margin=dict(t=60, b=60),
-            height=400,
-            width=600,
-            font=dict(color='black'),
-            xaxis=dict(
-                title_font=dict(color='black'),
-                tickfont=dict(color='black')
-            ),
-            yaxis=dict(
-                title_font=dict(color='black'),
-                tickfont=dict(color='black')
-            )
-        )
-    st.plotly_chart(fig)
-    fig_path3 = "plan_bar.png"
-    fig.savefig(fig_path3, bbox_inches='tight')
-    plt.close(fig)
-    
+        fig3, ax3 = plt.subplots(figsize=(6, 4))
+        bars = ax3.bar(plans, counts, color='#1f77b4')
+        ax3.bar_label(bars, labels=[f"{v:,}" for v in counts], padding=3, color='black')
+        ax3.set_ylabel("Number of Claims", color='black')
+        ax3.set_title("Claim Count per Plan", color='black')
+        plt.xticks(rotation=45, ha='right')
+        bar_path = "output/images/section3_plan.png"
+        fig3.savefig(bar_path, bbox_inches='tight')
+        st.pyplot(fig3)
+        plt.close(fig3)
     else:
-        st.warning("'Plan' column not found in Claim Data.")
+        st.warning("'Plan' column not found")
 
     # Section 4: Claim Billed by Month and Product Type
     st.subheader("Claim Billed by Month and Product Type")
