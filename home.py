@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
+import imgkit
+import plotly.io as pio
+from pptx.util import Inches
 
 # Claim data functions
 def filter_claim_data(df):
@@ -319,6 +322,11 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
 
 
     st.markdown(format_claim_ratio_table(summary_cr_df), unsafe_allow_html=True)
+    # save to image
+    html_content = format_claim_ratio_table(summary_cr_df)
+    with open("claim_ratio_table.html", "w", encoding="utf-8") as f:
+        f.write(html_content)
+    imgkit.from_file("claim_ratio_table.html", "claim_ratio_table.png")
     
 
     # Section 2: Claim per Membership (Pie Chart)
@@ -376,10 +384,12 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             height=400,
             width=400
         )
-    
+        fig.write_image("membership_piechart.png")
+        
         st.plotly_chart(fig)
     else:
         st.warning("'Membership' column not found in Claim Data.")
+    
     
     # Section 3: Claim Count per Plan
     st.subheader("Claim Count per Plan")
@@ -432,7 +442,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
                 tickfont=dict(color='black')
             )
         )
-
+        fig.write_image("claim_plan.png")
         st.plotly_chart(fig)
     
     else:
@@ -484,6 +494,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             legend_title_text='Product Type',
             height=400 # Adjust height if needed
         )
+        fig.write_image("month_product_bar.png")
     
         # Display the chart
         st.plotly_chart(fig, use_container_width=True) # use_container_width=True makes it responsive
@@ -498,7 +509,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         # Re-sort the pivoted table by the ordered month index
         pivot_table['Settled Month'] = pd.Categorical(pivot_table['Settled Month'], categories=month_order, ordered=True)
         pivot_table = pivot_table.sort_values('Settled Month')
-    
+        
         st.dataframe(pivot_table)
     
     else:
@@ -580,7 +591,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             margin=dict(t=40, b=40),
             bargap=0.2
         )
-    
+        fig.write_image("billed_per_product.png")
         st.plotly_chart(fig, use_container_width=True)
 
     # Section 6: Top 10 Treatment Places by Claim Type
@@ -729,3 +740,46 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         # Render in Streamlit
         st.markdown(render_styled_table(top_10_emp_summary), unsafe_allow_html=True)
+
+    # PPT output directory
+    output_dir = "output"
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Default file name
+    default_name = "Claim_Report_Presentation"
+    
+    # Let user rename the file
+    ppt_filename_input = st.text_input("Enter file name for the PPT:", value=default_name)
+    ppt_filename = ppt_filename_input.strip() or default_name
+    ppt_filepath = os.path.join(output_dir, f"{ppt_filename}.pptx")
+    
+    # Function to generate PPT
+    def create_ppt(path):
+        prs = Presentation("template.pptx")  # <- use your actual template path
+    
+        # Example: Section 2 - Pie chart slide
+        slide_layout = prs.slide_layouts[1]  # Title and Content
+        slide = prs.slides.add_slide(slide_layout)
+        slide.shapes.title.text = "Section 2: Membership Pie Chart"
+        slide.placeholders[1].text = "Here is the pie chart."
+    
+        # Optional image
+        img_path = "output/images/section2_pie.png"
+        if os.path.exists(img_path):
+            slide.shapes.add_picture(img_path, Inches(1), Inches(2), width=Inches(6))
+    
+        # Add more slides here...
+    
+        prs.save(path)
+    
+    # Generate PPT
+    if st.button("Generate PPT"):
+        create_ppt(ppt_filepath)
+        with open(ppt_filepath, "rb") as f:
+            st.success("PPT generated successfully!")
+            st.download_button(
+                label="Download PPT",
+                data=f,
+                file_name=f"{ppt_filename}.pptx",
+                mime="application/vnd.openxmlformats-officedocument.presentationml.presentation"
+            )
