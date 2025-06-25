@@ -395,9 +395,10 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             height=400,
             width=400
         )
-        fig.write_image("membership_piechart.png")
-        
         st.plotly_chart(fig)
+        fig_path2 = "membership_pie.png"
+        fig.savefig(fig_path2, bbox_inches='tight')
+        plt.close(fig)
     else:
         st.warning("'Membership' column not found in Claim Data.")
     
@@ -453,8 +454,10 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
                 tickfont=dict(color='black')
             )
         )
-        fig.write_image("claim_plan.png")
-        st.plotly_chart(fig)
+    st.plotly_chart(fig)
+    fig_path3 = "plan_bar.png"
+    fig.savefig(fig_path3, bbox_inches='tight')
+    plt.close(fig)
     
     else:
         st.warning("'Plan' column not found in Claim Data.")
