@@ -214,8 +214,8 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     total_unpaid   = int(claim_transformed["Sum of Unpaid"].sum())
     claim_summary_data = {
         "Metric": ["Total Claims", "Total Billed", "Total Accepted", "Total Excess", "Total Unpaid"],
-        "Value": [f"{total_claims:,}", f"{total_billed:,.2f}", f"{total_accepted:,.2f}",
-                  f"{total_excess:,.2f}", f"{total_unpaid:,.2f}"]
+        "Value": [f"{total_claims:,}", f"{total_billed:,}", f"{total_accepted:,}",
+                  f"{total_excess:,}", f"{total_unpaid:,}"]
     }
     claim_summary_df = pd.DataFrame(claim_summary_data)
 
@@ -305,9 +305,9 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
                     if col == 'CR' and not pd.isna(value):
                         content = f"{value:.2f}%"
                     elif col == 'Est Claim' and not pd.isna(value):
-                        content = f"{value:,.2f}"
+                        content = f"{value:,}"
                     else:
-                        content = f"{value:,.2f}"
+                        content = f"{value:,}"
                 else:
                     content = value
                 html += f"<td style='border: 1px solid #333; color: black; padding: 8px; text-align: center;'>{content}</td>"
