@@ -323,10 +323,21 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
 
     st.markdown(format_claim_ratio_table(summary_cr_df), unsafe_allow_html=True)
     # save to image
-    html_content = format_claim_ratio_table(summary_cr_df)
-    with open("claim_ratio_table.html", "w", encoding="utf-8") as f:
-        f.write(html_content)
-    imgkit.from_file("claim_ratio_table.html", "claim_ratio_table.png")
+    def save_table_as_image(df, output_file):
+        fig = go.Figure(data=[go.Table(
+            header=dict(values=list(df.columns),
+                        fill_color='#0070C0',
+                        align='center',
+                        font=dict(color='white', size=12)),
+            cells=dict(values=[df[col] for col in df.columns],
+                       fill_color='white',
+                       align='center',
+                       font=dict(color='black', size=11))
+        )])
+        
+        fig.update_layout(margin=dict(l=0, r=0, t=20, b=0), height=400)
+        fig.write_image(output_file)  # Requires kaleido
+    save_table_as_image(summary_cr_df, "claim_ratio_table.png")
     
 
     # Section 2: Claim per Membership (Pie Chart)
@@ -764,7 +775,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         slide.placeholders[1].text = "Here is the pie chart."
     
         # Optional image
-        img_path = "output/images/section2_pie.png"
+        img_path = "membership_piechart.png"
         if os.path.exists(img_path):
             slide.shapes.add_picture(img_path, Inches(1), Inches(2), width=Inches(6))
     
