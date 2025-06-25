@@ -693,7 +693,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         # Format numbers
         top_10_emp_summary['Total Claims'] = top_10_emp_summary['Total Claims'].map('{:,.0f}'.format)
-        top_10_emp_summary['Total Billed'] = top_10_emp_summary['Total Billed'].map('{:,.2f}'.format)
+        top_10_emp_summary['Total Billed'] = top_10_emp_summary['Total Billed'].map('{:,.0f}'.format)
     
         # Styled HTML table with thick visible borders
         def render_styled_table(df):
