@@ -655,10 +655,9 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
     st.plotly_chart(fig, use_container_width=True)
 
-    # Section 7: Top 10 Employees by Number of Claims
+    # Section 7: Top 10 Employee
     st.subheader("Top 10 Employees by Number of Claims")
-    
-    # Copy dari claim_transformed
+    # Copy from claim_transformed
     df_emp = claim_transformed.copy()
     
     # Group and summarize
@@ -671,14 +670,14 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
               .reset_index()
     )
     
-    # Cek jika kosong
+    # Check if empty
     if top_10_emp_summary.empty:
-        st.warning("Tidak ada data Employee yang bisa ditampilkan.")
+        st.warning("No employee data available.")
     else:
-        # Ambil top 10
+        # Get top 10
         top_10_emp_summary = top_10_emp_summary.sort_values(by='Total_Claims', ascending=False).head(10)
     
-        # Rename & Reorder
+        # Rename & reorder
         top_10_emp_summary = top_10_emp_summary.rename(columns={
             'Emp Name': 'Employee',
             'Plan': 'Plan',
@@ -686,11 +685,11 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             'Total_Billed': 'Total Billed'
         })[['Employee', 'Plan', 'Total Claims', 'Total Billed']]
     
-        # Format angka
+        # Format numbers
         top_10_emp_summary['Total Claims'] = top_10_emp_summary['Total Claims'].map('{:,.0f}'.format)
         top_10_emp_summary['Total Billed'] = top_10_emp_summary['Total Billed'].map('{:,.2f}'.format)
     
-        # Convert to styled HTML table
+        # Styled HTML table with borders
         def render_styled_table(df):
             html = """
             <style>
@@ -699,16 +698,16 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
                 width: 100%;
                 font-family: Arial, sans-serif;
             }
-            th {
-                background-color: #0067B1;
-                color: white;
+            th, td {
+                border: 1px solid #999;
                 padding: 10px;
                 text-align: center;
             }
+            th {
+                background-color: #0067B1;
+                color: white;
+            }
             td {
-                padding: 10px;
-                text-align: center;
-                border-bottom: 1px solid #ddd;
                 color: black;
             }
             tr:nth-child(even) {
@@ -719,7 +718,6 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
                 <thead>
                     <tr>
             """
-    
             for col in df.columns:
                 html += f"<th>{col}</th>"
             html += "</tr></thead><tbody>"
@@ -733,5 +731,5 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             html += "</tbody></table>"
             return html
     
-        # Render to Streamlit
+        # Show in Streamlit
         st.markdown(render_styled_table(top_10_emp_summary), unsafe_allow_html=True)
