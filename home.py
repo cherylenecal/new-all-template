@@ -345,62 +345,24 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
     # Cek apakah kolom 'Membership' tersedia
     if 'Membership' in claim_transformed.columns:
-        # Mapping label Membership
-        label_map = {
-            "1. EMP": "Employee",
-            "2. SPO": "Spouse",
-            "3. CHI": "Children"
-        }
+        label_map = {"1. EMP": "Employee", "2. SPO": "Spouse", "3. CHI": "Children"}
         claim_transformed['Membership Label'] = claim_transformed['Membership'].map(label_map)
-    
-        # Hitung jumlah klaim per jenis Membership
-        membership_counts = claim_transformed['Membership Label'].value_counts().reset_index()
-        membership_counts.columns = ['Membership Type', 'Claim Count']
-        membership_counts = membership_counts.sort_values(by='Membership Type')
-    
-        labels = membership_counts['Membership Type'].tolist()
-        values = membership_counts['Claim Count'].tolist()
-        total = sum(values)
-        text_labels = [f"<b>{(v/total)*100:.0f}%</b><br>({v} claim)" for v in values]
-    
-        # Warna sesuai urutan biru (dari gelap ke terang)
-        colors = ['#1f77b4', '#4e91c7', '#a6c8ea']
-    
-        # Membuat pie chart
-        fig = go.Figure(data=[go.Pie(
-            labels=labels,
-            values=values,
-            marker=dict(colors=colors),
-            text=text_labels,
-            textinfo='text',
-            insidetextorientation='horizontal',
-            hoverinfo='label+value',
-            pull=[0, 0, 0],
-            showlegend=True,
-            textfont=dict(color='white', size=14, family='Arial'),
-            hole=0
-        )])
-    
-        # Layout chart
-        fig.update_layout(
-            legend_orientation="h",
-            legend_title_text='',
-            legend=dict(
-                yanchor="top",
-                y=-0.1,
-                xanchor="center",
-                x=0.5
-            ),
-            margin=dict(t=60, b=60),
-            height=400,
-            width=400
+        mc = claim_transformed['Membership Label'].value_counts()
+        labels, sizes = mc.index.tolist(), mc.values.tolist()
+        fig, ax = plt.subplots(figsize=(4,4))
+        wedges, texts, autotexts = ax.pie(
+            sizes, labels=labels,
+            colors=['#1f77b4','#4e91c7','#a6c8ea'],
+            autopct=lambda pct: f"{int(pct/100*sum(sizes)):,}",
+            textprops=dict(color="white", fontsize=12)
         )
-        st.plotly_chart(fig)
-        fig_path2 = "membership_pie.png"
-        fig.savefig(fig_path2, bbox_inches='tight')
+        ax.set_title("Claim Count per Membership", color='black')
+        pie_path = "output/images/section2_membership.png"
+        fig.savefig(pie_path, bbox_inches='tight')
+        st.pyplot(fig2)
         plt.close(fig)
     else:
-        st.warning("'Membership' column not found in Claim Data.")
+        st.warning("'Membership' column not found")
     
     
     # Section 3: Claim Count per Plan
@@ -756,37 +718,26 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         st.markdown(render_styled_table(top_10_emp_summary), unsafe_allow_html=True)
 
     # PPT output directory
-    output_dir = "output"
-    os.makedirs(output_dir, exist_ok=True)
+    st.markdown("---")
+    st.subheader("Generate PowerPoint Report")
+    ppt_filename_input = st.text_input("Enter PPT file name:", "Claim_Report")
+    ppt_filename = ppt_filename_input.strip() or "Claim_Report"
+    ppt_filepath = os.path.join("output", f"{ppt_filename}.pptx")
     
-    # Default file name
-    default_name = "Claim_Report_Presentation"
-    
-    # Let user rename the file
-    ppt_filename_input = st.text_input("Enter file name for the PPT:", value=default_name)
-    ppt_filename = ppt_filename_input.strip() or default_name
-    ppt_filepath = os.path.join(output_dir, f"{ppt_filename}.pptx")
-    
-    # Function to generate PPT
     def create_ppt(path):
-        prs = Presentation("template.pptx")  # <- use your actual template path
-    
-        # Example: Section 2 - Pie chart slide
-        slide_layout = prs.slide_layouts[1]  # Title and Content
-        slide = prs.slides.add_slide(slide_layout)
-        slide.shapes.title.text = "Section 2: Membership Pie Chart"
-        slide.placeholders[1].text = "Here is the pie chart."
-    
-        # Optional image
-        img_path = "membership_piechart.png"
-        if os.path.exists(img_path):
-            slide.shapes.add_picture(img_path, Inches(1), Inches(2), width=Inches(6))
-    
-        # Add more slides here...
-    
+        prs = Presentation("template.pptx")
+        # Slide for pie chart
+        if pie_path:
+            slide2 = prs.slides.add_slide(prs.slide_layouts[1])
+            slide2.shapes.title.text = "Claim Count per Membership Type"
+            slide2.shapes.add_picture(pie_path, Inches(1), Inches(1.5), width=Inches(6))
+        # Slide for bar chart
+        if bar_path:
+            slide3 = prs.slides.add_slide(prs.slide_layouts[1])
+            slide3.shapes.title.text = "Claim Count per Plan"
+            slide3.shapes.add_picture(bar_path, Inches(1), Inches(1.5), width=Inches(6))
         prs.save(path)
     
-    # Generate PPT
     if st.button("Generate PPT"):
         create_ppt(ppt_filepath)
         with open(ppt_filepath, "rb") as f:
