@@ -753,6 +753,9 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             st.error("Gagal menyimpan tabel sebagai gambar.")
 
 
+    # Gunakan layout 'Content Slide 4' (index ke-5)
+    CONTENT_LAYOUT_INDEX = 5
+    
     def add_title(slide, title_text):
         if slide.shapes.title:
             slide.shapes.title.text = title_text
@@ -764,33 +767,63 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             title_tf.paragraphs[0].font.bold = True
     
     def create_ppt(path):
-        sections = [
-            ("section1_summary_metrics.png", "Summary Metrics"),
-            ("claim_ratio_table.png", "Claim Ratio Summary Table"),
-            ("section2_membership.png", "Claim Count per Membership Type"),
-            ("section3_plan.png", "Claim Count per Plan"),
-            ("section4_month_product.png", "Claim Billed by Month and Product Type"),
-            ("section4_month_product_table.png", "Claim Table by Month and Product Type"),
-            ("section7_top10_employees.png", "Top 10 Employees by Number of Claims")
-        ]
+        prs = Presentation("template.pptx")
     
-        for img, title in sections:
-            if os.path.exists(img):
-                slide = prs.slides.add_slide(prs.slide_layouts[1])
-                add_title(slide, title)
-                slide.shapes.add_picture(img, Inches(1), Inches(1.5), width=Inches(7))
+        # Section 1a - Summary Metrics
+        if os.path.exists("section1_summary_metrics.png"):
+            slide = prs.slides.add_slide(prs.slide_layouts[CONTENT_LAYOUT_INDEX])
+            add_title(slide, "Summary Metrics")
+            slide.shapes.add_picture("section1_summary_metrics.png", Inches(1), Inches(1.5), width=Inches(7))
     
+        # Section 1b - Claim Ratio Table
+        if os.path.exists("claim_ratio_table.png"):
+            slide = prs.slides.add_slide(prs.slide_layouts[CONTENT_LAYOUT_INDEX])
+            add_title(slide, "Claim Ratio Summary Table")
+            slide.shapes.add_picture("claim_ratio_table.png", Inches(1), Inches(1.5), width=Inches(7))
+    
+        # Section 2 - Pie Chart
+        if os.path.exists("section2_membership.png"):
+            slide = prs.slides.add_slide(prs.slide_layouts[CONTENT_LAYOUT_INDEX])
+            add_title(slide, "Claim Count per Membership Type")
+            slide.shapes.add_picture("section2_membership.png", Inches(1), Inches(1.5), width=Inches(7))
+    
+        # Section 3 - Claim per Plan
+        if os.path.exists("section3_plan.png"):
+            slide = prs.slides.add_slide(prs.slide_layouts[CONTENT_LAYOUT_INDEX])
+            add_title(slide, "Claim Count per Plan")
+            slide.shapes.add_picture("section3_plan.png", Inches(1), Inches(1.5), width=Inches(7))
+    
+        # Section 4a - Chart Month by Product
+        if os.path.exists("section4_month_product.png"):
+            slide = prs.slides.add_slide(prs.slide_layouts[CONTENT_LAYOUT_INDEX])
+            add_title(slide, "Claim Billed by Month and Product Type")
+            slide.shapes.add_picture("section4_month_product.png", Inches(1), Inches(1.5), width=Inches(7))
+    
+        # Section 4b - Table Month by Product
+        if os.path.exists("section4_month_product_table.png"):
+            slide = prs.slides.add_slide(prs.slide_layouts[CONTENT_LAYOUT_INDEX])
+            add_title(slide, "Claim Table by Month and Product Type")
+            slide.shapes.add_picture("section4_month_product_table.png", Inches(1), Inches(1.5), width=Inches(7))
+    
+        # Section 5 - Top Diagnoses by Product
         for product, path_img in diag_path:
             if os.path.exists(path_img):
-                slide = prs.slides.add_slide(prs.slide_layouts[1])
+                slide = prs.slides.add_slide(prs.slide_layouts[CONTENT_LAYOUT_INDEX])
                 add_title(slide, f"Top 10 Diagnoses: {product}")
                 slide.shapes.add_picture(path_img, Inches(1), Inches(1.5), width=Inches(7))
     
+        # Section 6 - Top Treatment Places by Claim Type
         for claim_type, path_img in tp_path:
             if os.path.exists(path_img):
-                slide = prs.slides.add_slide(prs.slide_layouts[1])
+                slide = prs.slides.add_slide(prs.slide_layouts[CONTENT_LAYOUT_INDEX])
                 add_title(slide, f"Top 10 Treatment Places: {claim_type}")
                 slide.shapes.add_picture(path_img, Inches(1), Inches(1.5), width=Inches(7))
+    
+        # Section 7 - Top Employees
+        if os.path.exists("section7_top10_employees.png"):
+            slide = prs.slides.add_slide(prs.slide_layouts[CONTENT_LAYOUT_INDEX])
+            add_title(slide, "Top 10 Employees by Number of Claims")
+            slide.shapes.add_picture("section7_top10_employees.png", Inches(1), Inches(1.5), width=Inches(7))
     
         prs.save(path)
     
@@ -806,9 +839,9 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     ppt_filename = (ppt_filename_input.strip() or "Claim_Report") + ".pptx"
     ppt_filepath = os.path.join(".", ppt_filename)
 
-    layout_names = [f"{i}: {layout.name}" for i, layout in enumerate(prs.slide_layouts)]
-    st.write("Available Layouts in Template:")
-    st.code("\n".join(layout_names))
+    # layout_names = [f"{i}: {layout.name}" for i, layout in enumerate(prs.slide_layouts)]
+    # st.write("Available Layouts in Template:")
+    # st.code("\n".join(layout_names))
     
     # ⬇️ Tombol untuk generate
     if st.button("Generate PPT"):
