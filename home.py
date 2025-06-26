@@ -533,7 +533,9 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         ax.set_xlabel("Value", fontsize=label_font)
         ax.tick_params(axis='x', labelsize=label_font-1)
         ax.legend(loc='lower right', fontsize=label_font, frameon=True)
-    
+
+        max_val = max(top10['Amount'].max(), top10['Qty'].max())
+        ax.set_xlim(0, max_val * 1.2)  # tambah 20% ruang kanan
         plt.tight_layout(pad=2)
     
         # Simpan & tampilkan
