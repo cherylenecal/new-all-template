@@ -501,30 +501,34 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         dfp['Amount'] /= 1_000_000  # jutaan
         top10 = dfp.sort_values('Amount', ascending=False).head(10).iloc[::-1]
     
-        fig, ax = plt.subplots(figsize=(10, 6))
+        fig, ax = plt.subplots(figsize=(12, 8))  # Lebih besar
         y = range(len(top10))
         bar_height = 0.35
-    
+        
         # Bar Amount di atas
         ax.barh([i + bar_height / 2 for i in y], top10['Amount'], height=bar_height,
                 color='#1f77b4', label='Amount (mil)', alpha=0.9)
-    
+        
         # Bar Qty di bawah
         ax.barh([i - bar_height / 2 for i in y], top10['Qty'], height=bar_height,
                 color='#a6c8ea', label='Qty', alpha=0.9)
-    
-        # Label jumlah
+        
+        # Label nilai
         for i, (amt, qty) in enumerate(zip(top10['Amount'], top10['Qty'])):
-            ax.text(amt, i + bar_height / 2, f'{amt:,.1f}', va='center', ha='left', fontsize=11)
-            ax.text(qty, i - bar_height / 2, f'{qty:,}', va='center', ha='left', fontsize=11)
-    
+            ax.text(amt + 2, i + bar_height / 2, f'{amt:,.1f}', va='center', ha='left', fontsize=13)
+            ax.text(qty + 2, i - bar_height / 2, f'{qty:,}', va='center', ha='left', fontsize=13)
+        
+        # Label diagnosis
         ax.set_yticks(y)
-        ax.set_yticklabels(top10['Diagnosis'], fontsize=12)
-        ax.set_title(f"Top 10 Diagnoses: {product}", fontsize=14)
-        ax.set_xlabel("Value", fontsize=12)
-        ax.legend(loc='lower right', fontsize=11)
-    
-        plt.tight_layout()
+        ax.set_yticklabels(top10['Diagnosis'], fontsize=13)
+        
+        # Judul dan sumbu
+        ax.set_title(f"Top 10 Diagnoses: {product}", fontsize=16, weight='bold')
+        ax.set_xlabel("Value", fontsize=14)
+        ax.legend(loc='lower right', fontsize=13)
+        
+        # Layout lebih rapi
+        plt.tight_layout(pad=2)
         path = f"section5_diag_{product}.png"
         fig.savefig(path, bbox_inches='tight')
         st.pyplot(fig)
