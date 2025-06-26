@@ -384,7 +384,6 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         # Tambahkan legend di kanan pie chart
         ax.legend(wedges, labels, title="Membership", loc="center left", bbox_to_anchor=(1, 0.5))
-        ax.set_title("Claim Count per Membership", fontsize=14)
         ax.axis('equal')  # Lingkaran bulat, bukan elips
     
         pie_path = "section2_membership.png"
@@ -424,6 +423,11 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         fig3.savefig(bar_path, bbox_inches='tight')
         st.pyplot(fig3)
         plt.close(fig3)
+        if os.path.exists(bar_path):
+            st.success(f"Tabel berhasil disimpan sebagai gambar: `{bar_path}`")
+        else:
+            st.error("Gagal menyimpan tabel sebagai gambar.")
+
     else:
         st.warning("'Plan' column not found")
 
@@ -457,6 +461,11 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         plt.savefig(month_prod_path, bbox_inches='tight')
         st.pyplot(plt.gcf())
         plt.close()
+        if os.path.exists(month_prod_path):
+            st.success(f"Tabel berhasil disimpan sebagai gambar: `{month_prod_path}`")
+        else:
+            st.error("Gagal menyimpan tabel sebagai gambar.")
+
     
    # Tabel detail
     
