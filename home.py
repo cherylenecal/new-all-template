@@ -642,7 +642,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             ax.text(qty + 0.5, i - bar_height/2, f'{qty:,}', va='center', fontsize=value_font, color='black', fontproperties=font_prop)
     
         # Label sumbu Y
-        ax.set_yticks(y, fontproperties=font_prop)
+        ax.set_yticks(y)
         ax.set_yticklabels(top10['Diagnosis'], fontsize=label_font, fontproperties=font_prop)
     
         # Judul dan axis
