@@ -430,7 +430,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         # Pivot jadi wide
         pivot = mbp.pivot(index='Settled Month', columns='Product Type', values='Sum of Billed').fillna(0)
-        pivot.plot(kind='bar', figsize=(8,4))
+        pivot.plot(kind='bar', figsize=(10,7))
         plt.title("Claim Billed by Month and Product Type")
         plt.ylabel("Sum of Billed")
         plt.xticks(rotation=45, ha='right')
@@ -443,6 +443,10 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         # Tabel detail
         st.subheader("Claim Billed Details by Month and Product Type")
+        # Format angka agar memiliki pemisah ribuan
+        pivot_formatted = pivot.reset_index().copy()
+        for col in pivot_formatted.columns[1:]:  # Skip 'Settled Month'
+            pivot_formatted[col] = pivot_formatted[col].astype(int).map('{:,}'.format)
         st.dataframe(pivot.reset_index(), use_container_width=True)
     else:
         st.warning("'Settled Date' or 'Product Type' column not found")
