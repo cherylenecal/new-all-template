@@ -530,7 +530,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         )
         
         # Lalu kamu urutkan dan pivot:
-        mbp['Settled Month'] = pd.Categorical()
+        mbp['Settled Month'] = pd.Categorical(mbp['Settled Month'], categories=order, ordered=True)
         mbp = mbp.sort_values('Settled Month')
         pivot = mbp.pivot(index='Settled Month', columns='Product Type', values='Sum of Billed').fillna(0)
     
