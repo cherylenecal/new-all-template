@@ -441,47 +441,19 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         st.pyplot(plt.gcf())
         plt.close()
     
-    # ── Tampilkan Tabel Detail sebagai Gambar (Matplotlib) ──
+   # Tabel detail
+    st.subheader("Claim Billed Details by Month and Product Type")
     
-    # Format angka ribuan
-    formatted_df = pivot.reset_index().copy()
-    formatted_df.iloc[:, 1:] = formatted_df.iloc[:, 1:].applymap(lambda x: f"{int(x):,}")
+    # Format angka dengan koma ribuan dan tanpa index tambahan
+    pivot_formatted = pivot.copy()
+    pivot_formatted = pivot_formatted.applymap(lambda x: f"{int(x):,}" if not pd.isna(x) else "")
     
-    # Plot tabel
-    fig, ax = plt.subplots(figsize=(len(formatted_df.columns)*1.5, len(formatted_df)*0.6 + 1))
-    ax.axis('off')
+    # Gabungkan kembali Settled Month ke dalam dataframe tanpa index
+    final_table = pivot_formatted.reset_index().drop(columns=['index'])
     
-    table = ax.table(
-        cellText=formatted_df.values,
-        colLabels=formatted_df.columns,
-        cellLoc='center',
-        loc='center'
-    )
-    
-    # Styling
-    for (row, col), cell in table.get_celld().items():
-        cell.set_edgecolor('black')
-        cell.set_linewidth(1)
-        if row == 0:
-            cell.set_facecolor('#0070C0')
-            cell.get_text().set_color('white')
-            cell.get_text().set_weight('bold')
-        else:
-            cell.set_facecolor('#fcfcfa' if row % 2 == 0 else 'white')
-            cell.get_text().set_color('black')
-    
-    table.auto_set_font_size(False)
-    table.set_fontsize(11)
-    table.scale(1, 1.2)
-    
-    plt.tight_layout()
-    month_prod_table_path = "section4_month_product_table.png"
-    fig.savefig(month_prod_table_path, bbox_inches='tight')
-    st.pyplot(fig)
-    plt.close(fig)
+    # Tampilkan tanpa index tambahan
+    st.dataframe(final_table, use_container_width=True, hide_index=True)
 
-    else:
-        st.warning("'Settled Date' or 'Product Type' column not found")
     
     # ─── Section 5: Top 10 Diagnoses by Product Type ──────────────────────────────
     st.subheader("Top 10 Diagnoses by Product Type")
