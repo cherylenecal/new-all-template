@@ -754,14 +754,14 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
 
 
     def add_title(slide, title_text):
-    if slide.shapes.title:
-        slide.shapes.title.text = title_text
-    else:
-        title_shape = slide.shapes.add_textbox(Inches(0.5), Inches(0.3), Inches(9), Inches(1))
-        title_tf = title_shape.text_frame
-        title_tf.text = title_text
-        title_tf.paragraphs[0].font.size = Pt(24)
-        title_tf.paragraphs[0].font.bold = True
+        if slide.shapes.title:
+            slide.shapes.title.text = title_text
+        else:
+            title_shape = slide.shapes.add_textbox(Inches(0.5), Inches(0.3), Inches(9), Inches(1))
+            title_tf = title_shape.text_frame
+            title_tf.text = title_text
+            title_tf.paragraphs[0].font.size = Pt(24)
+            title_tf.paragraphs[0].font.bold = True
 
     def create_ppt(path):
         prs = Presentation("template.pptx")
