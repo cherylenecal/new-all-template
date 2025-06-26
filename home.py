@@ -528,7 +528,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         ax.legend(loc='lower right', fontsize=13)
         
         # Layout lebih rapi
-        plt.tight_layout(pad=2)
+        plt.tight_layout(pad=5)
         path = f"section5_diag_{product}.png"
         fig.savefig(path, bbox_inches='tight')
         st.pyplot(fig)
