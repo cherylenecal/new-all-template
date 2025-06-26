@@ -511,15 +511,26 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
     if 'Settled Date' in claim_transformed.columns and 'Product Type' in claim_transformed.columns:
         # … proses pivot seperti biasa …
+         # 1) Buat kolom Settled Month
+        claim_transformed['Settled Month'] = claim_transformed['Settled Date'].dt.strftime("%b'%y")
+
         mbp = (
             claim_transformed
             .groupby(['Settled Month', 'Product Type'])['Sum of Billed']
             .sum()
             .reset_index()
         )
+        # 3) Tentukan order bulan
+        order = (
+            claim_transformed['Settled Date']
+            .dt.to_period('M')
+            .sort_values()
+            .dt.strftime("%b'%y")
+            .unique()
+        )
         
         # Lalu kamu urutkan dan pivot:
-        mbp['Settled Month'] = pd.Categorical(…)
+        mbp['Settled Month'] = pd.Categorical()
         mbp = mbp.sort_values('Settled Month')
         pivot = mbp.pivot(index='Settled Month', columns='Product Type', values='Sum of Billed').fillna(0)
     
