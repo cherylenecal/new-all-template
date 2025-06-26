@@ -485,8 +485,9 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
     # Tampilkan tanpa index tambahan
     st.dataframe(final_table, use_container_width=True, hide_index=True)
-    save_table_as_image(final_table, "section4_month_product_table.png")
-    if os.path.exists("section4_month_product_table.png"):
+    table_filename = "section4_month_product_table.png"
+    save_table_as_image(final_table, table_filename)
+    if os.path.exists(table_filename):
         st.success(f"Tabel berhasil disimpan sebagai gambar: `{table_filename}`")
     else:
         st.error("Gagal menyimpan tabel sebagai gambar.")
