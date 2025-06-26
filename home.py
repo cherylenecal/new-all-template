@@ -442,12 +442,16 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         plt.close()
     
         # Tabel detail
-        st.subheader("Claim Billed Details by Month and Product Type")
-        # Format angka agar memiliki pemisah ribuan
-        pivot_formatted = pivot.reset_index().copy()
-        for col in pivot_formatted.columns[1:]:  # Skip 'Settled Month'
-            pivot_formatted[col] = pivot_formatted[col].astype(int).map('{:,}'.format)
-        st.dataframe(pivot_formatted.reset_index(), use_container_width=True, hide_index=True)
+        # Format angka dengan koma ribuan dan tanpa index tambahan
+        pivot_formatted = pivot.copy()
+        pivot_formatted = pivot_formatted.applymap(lambda x: f"{int(x):,}" if not pd.isna(x) else "")
+        
+        # Gabungkan kembali Settled Month ke dalam dataframe tanpa index
+        final_table = pivot_formatted.reset_index()
+        
+        # Tampilkan tanpa index tambahan
+        st.dataframe(final_table, use_container_width=True, hide_index=True)
+
     else:
         st.warning("'Settled Date' or 'Product Type' column not found")
     
