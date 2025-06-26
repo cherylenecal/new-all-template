@@ -364,6 +364,10 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     pie_path = None
     if 'Membership' in claim_transformed.columns:
         # … hitung mc, labels, sizes …
+        # Hitung jumlah klaim langsung dari kolom 'Membership'
+        mc = claim_transformed['Membership'].value_counts()
+        labels = mc.index.tolist()
+        sizes = mc.values.tolist()
         fig, ax = plt.subplots(figsize=(4,4))
         wedges, texts, autotexts = ax.pie(
             sizes, labels=labels,
