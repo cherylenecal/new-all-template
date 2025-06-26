@@ -396,8 +396,8 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         fig3, ax3 = plt.subplots(figsize=(6, 4))
         bars = ax3.bar(plans, counts, color='#1f77b4')
     
-        # Tampilkan nama plan di atas masing-masing bar
-        ax3.bar_label(bars, labels=plans, padding=3, color='black')
+        # Tampilkan count sebagai label bar
+        ax3.bar_label(bars, labels=[f"{c:,}" for c in counts], padding=3, color='black')
     
         ax3.set_ylabel("Number of Claims", color='black')
         ax3.set_title("Claim Count per Plan", color='black')
