@@ -765,9 +765,6 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
     def create_ppt(path):
         prs = Presentation("template.pptx")
-        layout_names = [f"{i}: {layout.name}" for i, layout in enumerate(prs.slide_layouts)]
-        st.write("Available Layouts in Template:")
-        st.code("\n".join(layout_names))
         sections = [
             ("section1_summary_metrics.png", "Summary Metrics"),
             ("claim_ratio_table.png", "Claim Ratio Summary Table"),
@@ -808,6 +805,10 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     ppt_filename_input = st.text_input("Enter PPT file name (without .pptx):", "Claim_Report")
     ppt_filename = (ppt_filename_input.strip() or "Claim_Report") + ".pptx"
     ppt_filepath = os.path.join(".", ppt_filename)
+
+    layout_names = [f"{i}: {layout.name}" for i, layout in enumerate(prs.slide_layouts)]
+    st.write("Available Layouts in Template:")
+    st.code("\n".join(layout_names))
     
     # ⬇️ Tombol untuk generate
     if st.button("Generate PPT"):
