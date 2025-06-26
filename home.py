@@ -447,7 +447,6 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             autopct=lambda pct: format_autopct(pct, sizes),
             textprops=dict(color="black", fontsize=10),
             startangle=90,
-            fontproperties=font_prop
         )
     
         # Tambahkan legend di kanan pie chart
