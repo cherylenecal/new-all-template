@@ -498,53 +498,58 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             .rename(columns={'sum': 'Amount', 'count': 'Qty'})
             .reset_index()
         )
-        dfp['Amount'] /= 1_000_000  # jutaan
+        dfp['Amount'] /= 1_000_000  # dalam juta
         top10 = dfp.sort_values('Amount', ascending=False).head(10).iloc[::-1]
     
         n = len(top10)
-        fig, ax = plt.subplots(figsize=(14, 0.6 * n + 2))
+        fig, ax = plt.subplots(figsize=(15, 0.65 * n + 2))
     
+        # Dynamic font size
         max_label_length = max(top10['Diagnosis'].str.len())
-        label_font = 11 if max_label_length > 40 else 12 if max_label_length > 30 else 13
-        value_font = max(10, label_font - 1)
-        bar_height = 0.3 if n > 10 else 0.4
+        label_font = 14 if max_label_length > 40 else 15 if max_label_length > 30 else 16
+        value_font = max(12, label_font - 2)
+        bar_height = 0.35
     
         y = range(n)
     
-        # Amount bar di atas
+        # Bar Amount (di atas)
         ax.barh([i + bar_height/2 for i in y], top10['Amount'], height=bar_height,
                 color='#1f77b4', label='Amount (mil)', alpha=0.9)
     
-        # Qty bar di bawah
+        # Bar Qty (di bawah)
         ax.barh([i - bar_height/2 for i in y], top10['Qty'], height=bar_height,
                 color='#a6c8ea', label='Qty', alpha=0.9)
     
-        # Teks label value
+        # Label angka di samping bar
         for i, (amt, qty) in enumerate(zip(top10['Amount'], top10['Qty'])):
-            ax.text(amt + 2, i + bar_height/2, f'{amt:,.1f}', va='center', fontsize=value_font)
-            ax.text(qty + 2, i - bar_height/2, f'{qty:,}', va='center', fontsize=value_font)
+            ax.text(amt + 0.5, i + bar_height/2, f'{amt:,.1f}', va='center', fontsize=value_font, color='black')
+            ax.text(qty + 0.5, i - bar_height/2, f'{qty:,}', va='center', fontsize=value_font, color='black')
     
-        # Label diagnosis
+        # Label sumbu Y
         ax.set_yticks(y)
         ax.set_yticklabels(top10['Diagnosis'], fontsize=label_font)
     
-        # Judul dan legend
-        ax.set_title(f"Top 10 Diagnoses: {product}", fontsize=label_font+2, weight='bold')
+        # Judul dan axis
+        ax.set_title(f"Top 10 Diagnoses: {product}", fontsize=label_font + 4, weight='bold')
         ax.set_xlabel("Value", fontsize=label_font)
-        ax.tick_params(axis='x', labelsize=label_font-1)
+        ax.tick_params(axis='x', labelsize=label_font)
+    
+        # Legend
         ax.legend(loc='lower right', fontsize=label_font, frameon=True)
-
+    
+        # Otomatis set lebar sumbu X
         max_val = max(top10['Amount'].max(), top10['Qty'].max())
-        ax.set_xlim(0, max_val * 1.2)  # tambah 20% ruang kanan
+        ax.set_xlim(0, max_val * 1.3)  # tambahkan 30% untuk label
+    
         plt.tight_layout(pad=2)
     
-        # Simpan & tampilkan
         path = f"section5_diag_{product}.png"
         fig.savefig(path, bbox_inches='tight')
         st.pyplot(fig)
         plt.close(fig)
     
         diag_path.append((product, path))
+
 
 
 
