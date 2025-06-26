@@ -14,7 +14,13 @@ from matplotlib import rcParams, font_manager as fm
 # Load font dari file .otf
 font_path = "VAGRoundedStd-Light.otf"
 font_prop = fm.FontProperties(fname=font_path)
-plt.rcParams['font.family'] = font_prop.get_name()
+
+def apply_font_to_ax(ax, font):
+    ax.title.set_fontproperties(font)
+    ax.xaxis.label.set_fontproperties(font)
+    ax.yaxis.label.set_fontproperties(font)
+    for label in ax.get_xticklabels() + ax.get_yticklabels():
+        label.set_fontproperties(font)
 
 # Claim data functions
 def filter_claim_data(df):
@@ -433,6 +439,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         # Buat figure lebih besar dan simetris
         fig, ax = plt.subplots(figsize=(7, 5))
+        apply_font_to_ax(ax, font_prop)
         wedges, texts, autotexts = ax.pie(
             sizes,
             labels=None,
@@ -443,7 +450,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         )
     
         # Tambahkan legend di kanan pie chart
-        ax.legend(wedges, labels, title="Membership", loc="center left", bbox_to_anchor=(1, 0.5))
+        ax.legend(wedges, labels, title="Membership", loc="center left", bbox_to_anchor=(1, 0.5), )
         ax.axis('equal')  # Lingkaran bulat, bukan elips
     
         pie_path = "section2_membership.png"
