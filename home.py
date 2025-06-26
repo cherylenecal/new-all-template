@@ -510,25 +510,30 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         fig, ax = plt.subplots(figsize=(8, 5))
     
-        # Bar Qty di kiri
-        ax.barh([i - bar_width/2 for i in y], qty, height=bar_width, color='#a6c8ea', label='Qty')
+        # Bar Amount di atas (lebih tinggi posisi Y)
+        bars_amount = ax.barh([i + bar_width/2 for i in y], amt, height=bar_width, color='#1f77b4', alpha=0.8, label='Amount (mil)')
     
-        # Bar Amount di kanan
-        ax.barh([i + bar_width/2 for i in y], amt, height=bar_width, color='#1f77b4', alpha=0.8, label='Amount (mil)')
-    
-        # Labels Qty
-        for i, val in enumerate(qty):
-            ax.text(val, i - bar_width/2, f'{val:,}', va='center', ha='left', color='black')
+        # Bar Qty di bawah
+        bars_qty = ax.barh([i - bar_width/2 for i in y], qty, height=bar_width, color='#a6c8ea', label='Qty')
     
         # Labels Amount
         for i, val in enumerate(amt):
             ax.text(val, i + bar_width/2, f'{val:,.1f}', va='center', ha='left', color='black')
     
+        # Labels Qty
+        for i, val in enumerate(qty):
+            ax.text(val, i - bar_width/2, f'{val:,}', va='center', ha='left', color='black')
+    
         ax.set_yticks(y)
         ax.set_yticklabels(diagnoses)
         ax.set_title(f"Top 10 Diagnoses: {product}")
         ax.set_xlabel("Value")
-        ax.legend(loc='best')
+    
+        # Set urutan legend secara manual: Amount dulu, lalu Qty
+        handles, labels = ax.get_legend_handles_labels()
+        order = [0, 1]  # index 0: Amount, 1: Qty
+        ax.legend([handles[idx] for idx in order], [labels[idx] for idx in order], loc='best')
+    
         plt.tight_layout()
     
         path = f"section5_diag_{product}.png"
@@ -537,6 +542,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         plt.close(fig)
     
         diag_path.append((product, path))
+
 
     # ─── Section 6: Top 10 Treatment Places by Claim Type ────────────────────────
     st.subheader("Top 10 Treatment Places by Claim Type")
