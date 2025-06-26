@@ -767,7 +767,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             title_tf.paragraphs[0].font.bold = True
     
     def create_ppt(path):
-        prs = Presentation("template.pptx")
+        prs = Presentation("tes.pptx")
         content_layout = prs.slide_layouts[5]  # Content Slide 4
     
         # Simpan slide baru ke list dulu
