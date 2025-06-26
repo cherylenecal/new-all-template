@@ -387,19 +387,29 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     st.subheader("Claim Count per Plan")
     bar_path = None
     if 'Plan' in claim_transformed.columns:
-        # … hitung pc, plans, counts …
-        fig3, ax3 = plt.subplots(figsize=(6,4))
+        # Hitung jumlah klaim per Plan
+        pc = claim_transformed['Plan'].value_counts().sort_index()
+        plans = pc.index.tolist()
+        counts = pc.values.tolist()
+    
+        # Buat bar chart
+        fig3, ax3 = plt.subplots(figsize=(6, 4))
         bars = ax3.bar(plans, counts, color='#1f77b4')
-        ax3.bar_label(bars, labels=[f"{v:,}" for v in counts], padding=3, color='black')
+    
+        # Tampilkan nama plan di atas masing-masing bar
+        ax3.bar_label(bars, labels=plans, padding=3, color='black')
+    
         ax3.set_ylabel("Number of Claims", color='black')
         ax3.set_title("Claim Count per Plan", color='black')
         plt.xticks(rotation=45, ha='right')
-        bar_path = "section3_plan.png"                    # <= simpan di cwd
+    
+        bar_path = "section3_plan.png"
         fig3.savefig(bar_path, bbox_inches='tight')
         st.pyplot(fig3)
         plt.close(fig3)
     else:
         st.warning("'Plan' column not found")
+
 
     # ─── Section 4: Claim Billed by Month and Product Type ────────────────────────
     st.subheader("Claim Billed by Month and Product Type")
