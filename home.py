@@ -9,7 +9,7 @@ from pptx import Presentation
 from pptx.util import Inches, Pt
 import os
 import matplotlib.pyplot as plt
-from matplotlib import rcParams, font_manager
+from matplotlib import rcParams, font_manager as fm
 
 # Load font dari file .otf
 font_path = "VAGRoundedStd-Light.otf"
