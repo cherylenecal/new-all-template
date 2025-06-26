@@ -446,11 +446,12 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             colors=['#1f77b4', '#4e91c7', '#a6c8ea'],
             autopct=lambda pct: format_autopct(pct, sizes),
             textprops=dict(color="black", fontsize=10),
-            startangle=90
+            startangle=90,
+            fontproperties=font_prop
         )
     
         # Tambahkan legend di kanan pie chart
-        ax.legend(wedges, labels, title="Membership", loc="center left", bbox_to_anchor=(1, 0.5), )
+        ax.legend(wedges, labels, title="Membership", loc="center left", bbox_to_anchor=(1, 0.5), fontproperties=font_prop)
         ax.axis('equal')  # Lingkaran bulat, bukan elips
     
         pie_path = "section2_membership.png"
@@ -502,36 +503,51 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     # ─── Section 4: Claim Billed by Month and Product Type ────────────────────────
     st.subheader("Claim Billed by Month and Product Type")
     month_prod_path = None
-    if 'Settled Date' in claim_transformed.columns and 'Product Type' in claim_transformed.columns:
-        claim_transformed['Settled Month'] = claim_transformed['Settled Date'].dt.strftime("%b'%y")
-        mbp = (
-            claim_transformed
-            .groupby(['Settled Month', 'Product Type'])['Sum of Billed']
-            .sum()
-            .reset_index()
-        )
-        # Urutkan bulan
-        order = pd.to_datetime(claim_transformed['Settled Date']).dt.to_period('M') \
-                .sort_values().unique().strftime("%b'%y")
-        mbp['Settled Month'] = pd.Categorical(mbp['Settled Month'], categories=order, ordered=True)
-        mbp = mbp.sort_values('Settled Month')
     
-        # Pivot jadi wide
+    if 'Settled Date' in claim_transformed.columns and 'Product Type' in claim_transformed.columns:
+        # … proses pivot seperti biasa …
         pivot = mbp.pivot(index='Settled Month', columns='Product Type', values='Sum of Billed').fillna(0)
-        pivot.plot(kind='bar', figsize=(10,7))
-        plt.title("Claim Billed by Month and Product Type")
-        plt.ylabel("Sum of Billed")
-        plt.xticks(rotation=45, ha='right')
+    
+        # Buat bar chart dan dapatkan ax
+        fig, ax = plt.subplots(figsize=(10, 7))
+        pivot.plot(kind='bar', ax=ax)
+    
+        # Terapkan font ke semua elemen axis
+        apply_font_to_ax(ax, font_prop)
+    
+        # Judul & label dengan font_prop
+        ax.set_title("Claim Billed by Month and Product Type",
+                     fontproperties=font_prop, fontsize=18)
+        ax.set_ylabel("Sum of Billed",
+                      fontproperties=font_prop, fontsize=14)
+    
+        # Format tick labels
+        ax.tick_params(axis='x', rotation=45, labelsize=12)
+        for lbl in ax.get_xticklabels():
+            lbl.set_fontproperties(font_prop)
+    
+        # Jika ada legend, terapkan font juga
+        legend = ax.get_legend()
+        if legend:
+            for text in legend.get_texts():
+                text.set_fontproperties(font_prop)
+    
         plt.tight_layout()
     
+        # Simpan & tampilkan
         month_prod_path = "section4_month_product.png"
-        plt.savefig(month_prod_path, bbox_inches='tight')
-        st.pyplot(plt.gcf())
-        plt.close()
+        fig.savefig(month_prod_path, bbox_inches='tight')
+        st.pyplot(fig)
+        plt.close(fig)
+    
+        # Validasi simpan
         if os.path.exists(month_prod_path):
             st.success(f"Tabel berhasil disimpan sebagai gambar: `{month_prod_path}`")
         else:
             st.error("Gagal menyimpan tabel sebagai gambar.")
+    else:
+        st.warning("'Settled Date' or 'Product Type' column not found")
+
 
     
    # Tabel detail
