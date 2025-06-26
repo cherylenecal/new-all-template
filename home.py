@@ -551,38 +551,67 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         diag_path.append((product, path))
 
 
-
-
-    # ─── Section 6: Top 10 Treatment Places by Claim Type ────────────────────────
+   # ─── Section 6: Top 10 Treatment Places by Claim Type ────────────────────────
     st.subheader("Top 10 Treatment Places by Claim Type")
     tp_path = []
+    
     for claim_type in claim_transformed['Claim Type'].unique():
         dfp = (
-            claim_transformed[claim_transformed['Claim Type']==claim_type]
+            claim_transformed[claim_transformed['Claim Type'] == claim_type]
             .groupby('Treatment Place')['Sum of Billed']
-            .agg(['sum','count'])
-            .rename(columns={'sum':'Amount','count':'Qty'})
+            .agg(['sum', 'count'])
+            .rename(columns={'sum': 'Amount', 'count': 'Qty'})
             .reset_index()
         )
-        dfp['Amount'] /= 1_000_000
+        dfp['Amount'] /= 1_000_000  # dalam juta
         top10 = dfp.sort_values('Amount', ascending=False).head(10).iloc[::-1]
     
-        fig, ax = plt.subplots(figsize=(6,4))
-        ax.barh(top10['Treatment Place'], top10['Qty'], color='#a6c8ea', label='Qty')
-        ax.barh(top10['Treatment Place'], top10['Amount'], left=0, color='#1f77b4', label='Amount (mil)', alpha=0.7)
-        for i,(qty,amt) in enumerate(zip(top10['Qty'], top10['Amount'])):
-            ax.text(qty, i, f'{qty:,}', va='center', ha='left', color='black')
-            ax.text(amt, i, f'{amt:,.1f}', va='center', ha='left', color='black')
-        ax.set_title(f"Top 10 Treatment Places: {claim_type}")
-        ax.set_xlabel("Value")
-        ax.legend(loc='lower right')
-        plt.tight_layout()
+        n = len(top10)
+        fig, ax = plt.subplots(figsize=(15, 0.65 * n + 2))
+    
+        # Font dan tinggi bar fleksibel
+        max_label_length = max(top10['Treatment Place'].str.len())
+        label_font = 14 if max_label_length > 40 else 15 if max_label_length > 30 else 16
+        value_font = max(12, label_font - 2)
+        bar_height = 0.35
+        y = range(n)
+    
+        # Bar Amount (di atas)
+        ax.barh([i + bar_height/2 for i in y], top10['Amount'], height=bar_height,
+                color='#1f77b4', label='Amount (mil)', alpha=0.9)
+    
+        # Bar Qty (di bawah)
+        ax.barh([i - bar_height/2 for i in y], top10['Qty'], height=bar_height,
+                color='#a6c8ea', label='Qty', alpha=0.9)
+    
+        # Label angka
+        for i, (amt, qty) in enumerate(zip(top10['Amount'], top10['Qty'])):
+            ax.text(amt + 0.5, i + bar_height/2, f'{amt:,.1f}', va='center', fontsize=value_font, color='black')
+            ax.text(qty + 0.5, i - bar_height/2, f'{qty:,}', va='center', fontsize=value_font, color='black')
+    
+        # Label tempat perawatan
+        ax.set_yticks(y)
+        ax.set_yticklabels(top10['Treatment Place'], fontsize=label_font)
+    
+        # Judul, axis, dan legend
+        ax.set_title(f"Top 10 Treatment Places: {claim_type}", fontsize=label_font + 4, weight='bold')
+        ax.set_xlabel("Value", fontsize=label_font)
+        ax.tick_params(axis='x', labelsize=label_font)
+        ax.legend(loc='lower right', fontsize=label_font, frameon=True)
+    
+        # Batas x agar semua label muat
+        max_val = max(top10['Amount'].max(), top10['Qty'].max())
+        ax.set_xlim(0, max_val * 1.3)
+    
+        plt.tight_layout(pad=2)
     
         path = f"section6_tp_{claim_type}.png"
         fig.savefig(path, bbox_inches='tight')
         st.pyplot(fig)
         plt.close(fig)
-        tp_path.append((claim_type,path))
+    
+        tp_path.append((claim_type, path))
+
 
     # Section 7: Top 10 Employee
     st.subheader("Top 10 Employees by Number of Claims")
