@@ -9,6 +9,7 @@ from pptx import Presentation
 from pptx.util import Inches, Pt
 import os
 
+plt.rcParams['font.family'] = 'VAG Rounded Std Light'
 
 # Claim data functions
 def filter_claim_data(df):
