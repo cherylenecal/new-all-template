@@ -452,8 +452,10 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         # Tambahkan legend di kanan pie chart
         legend = ax.legend(wedges, labels, title="Membership", loc="center left", bbox_to_anchor=(1, 0.5), title_fontproperties=font_prop)
 
-        for text in legend.get_texts():
-            text.set_fontproperties(font_prop)
+        # Terapkan font ke legend texts & title
+        for txt in legend.get_texts():
+            txt.set_fontproperties(font_prop)
+        legend.get_title().set_fontproperties(font_prop)
         
         ax.axis('equal')  # Lingkaran bulat, bukan elips
     
