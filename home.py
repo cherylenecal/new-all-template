@@ -447,7 +447,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         pivot_formatted = pivot.reset_index().copy()
         for col in pivot_formatted.columns[1:]:  # Skip 'Settled Month'
             pivot_formatted[col] = pivot_formatted[col].astype(int).map('{:,}'.format)
-        st.dataframe(pivot.reset_index(), use_container_width=True)
+        st.dataframe(pivot_formatted.reset_index(), use_container_width=True)
     else:
         st.warning("'Settled Date' or 'Product Type' column not found")
     
