@@ -412,6 +412,10 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         fig.savefig(pie_path, bbox_inches='tight')
         st.pyplot(fig)
         plt.close(fig)
+        if os.path.exists(pie_path):
+            st.success(f"Tabel berhasil disimpan sebagai gambar: `{pie_path}`")
+        else:
+            st.error("Gagal menyimpan chart sebagai gambar.")
     else:
         st.warning("'Membership' column not found")
     
