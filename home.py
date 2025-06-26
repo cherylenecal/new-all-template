@@ -657,6 +657,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         # Judul dan axis
         ax.set_title(f"{product}", fontsize=label_font + 4, weight='bold', fontproperties=font_prop)
         ax.set_xlabel("Value", fontsize=label_font, fontproperties=font_prop)
+        ax.set_ylabel("Value", fontsize=label_font, fontproperties=font_prop)
         ax.tick_params(axis='x', labelsize=label_font)
     
         # Legend
