@@ -5,8 +5,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
 import plotly.graph_objects as go
+from pptx import Presentation
 from pptx.util import Inches
 import os
+
 
 # Claim data functions
 def filter_claim_data(df):
