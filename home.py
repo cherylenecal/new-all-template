@@ -651,7 +651,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         ax.tick_params(axis='x', labelsize=label_font)
     
         # Legend
-        ax.legend(loc='lower right', fontsize=label_font, frameon=True, fontproperties=font_prop)
+        ax.legend(loc='lower right', fontsize=label_font, frameon=True)
     
         # Otomatis set lebar sumbu X
         max_val = max(top10['Amount'].max(), top10['Qty'].max())
