@@ -393,7 +393,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         counts = pc.values.tolist()
     
         # Buat bar chart
-        fig3, ax3 = plt.subplots(figsize=(6, 4))
+        fig3, ax3 = plt.subplots(figsize=(8, 4))
         bars = ax3.bar(plans, counts, color='#1f77b4')
     
         # Tampilkan count sebagai label bar
