@@ -394,26 +394,43 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     # Section 2: Claim per Membership (Pie Chart)
     st.subheader("Claim Count per Membership Type")
     pie_path = None
+    
     if 'Membership' in claim_transformed.columns:
-        # … hitung mc, labels, sizes …
-        # Hitung jumlah klaim langsung dari kolom 'Membership'
         mc = claim_transformed['Membership'].value_counts()
         labels = mc.index.tolist()
         sizes = mc.values.tolist()
-        fig, ax = plt.subplots(figsize=(4,4))
+    
+        fig, ax = plt.subplots(figsize=(6, 5))  # Perbesar ukuran chart
+    
+        # Format label persentase dan jumlah
+        def make_autopct(sizes):
+            def my_autopct(pct):
+                total = sum(sizes)
+                val = int(pct / 100.0 * total)
+                return f"{pct:.1f}%\n({val:,})"
+            return my_autopct
+    
         wedges, texts, autotexts = ax.pie(
-            sizes, labels=labels,
-            colors=['#1f77b4','#4e91c7','#a6c8ea'],
-            autopct=lambda pct: f"{int(pct/100*sum(sizes)):,}",
-            textprops=dict(color="white", fontsize=12)
+            sizes,
+            labels=None,  # label di luar pie
+            colors=['#1f77b4', '#4e91c7', '#a6c8ea'],
+            autopct=make_autopct(sizes),
+            textprops=dict(color="black", fontsize=10)
         )
-        ax.set_title("Claim Count per Membership", color='black')
-        pie_path = "section2_membership.png"              # <= simpan di cwd
+    
+        ax.set_title("Claim Count per Membership", color='black', fontsize=14)
+        ax.axis('equal')  # Equal aspect ratio agar pie jadi lingkaran
+    
+        # Tambahkan legend di samping
+        ax.legend(wedges, labels, title="Membership", loc="center left", bbox_to_anchor=(1, 0.5))
+    
+        pie_path = "section2_membership.png"
         fig.savefig(pie_path, bbox_inches='tight')
         st.pyplot(fig)
         plt.close(fig)
+    
         if os.path.exists(pie_path):
-            st.success(f"Tabel berhasil disimpan sebagai gambar: `{pie_path}`")
+            st.success(f"Chart berhasil disimpan sebagai gambar: `{pie_path}`")
         else:
             st.error("Gagal menyimpan chart sebagai gambar.")
     else:
