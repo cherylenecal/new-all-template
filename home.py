@@ -765,7 +765,9 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
     def create_ppt(path):
         prs = Presentation("template.pptx")
-    
+        layout_names = [f"{i}: {layout.name}" for i, layout in enumerate(prs.slide_layouts)]
+        st.write("Available Layouts in Template:")
+        st.code("\n".join(layout_names))
         sections = [
             ("section1_summary_metrics.png", "Summary Metrics"),
             ("claim_ratio_table.png", "Claim Ratio Summary Table"),
