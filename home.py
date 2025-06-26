@@ -688,6 +688,16 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         # Render in Streamlit
         st.markdown(render_styled_table(top_10_emp_summary), unsafe_allow_html=True)
+        # Simpan sebagai gambar
+        table_path = "section7_top10_employees.png"
+        save_table_as_image(top_10_emp_summary, table_path)
+        
+        # Beri info apakah berhasil disimpan
+        if os.path.exists(table_path):
+            st.success(f"Tabel berhasil disimpan sebagai gambar: `{table_path}`")
+        else:
+            st.error("Gagal menyimpan tabel sebagai gambar.")
+
 
     # Generate PPT 
     st.markdown("---")
