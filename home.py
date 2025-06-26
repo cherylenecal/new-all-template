@@ -431,6 +431,13 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         mc = claim_transformed['Membership'].value_counts()
         labels = mc.index.tolist()
         sizes = mc.values.tolist()
+
+        label_map = {
+            "1. EMP": "Employee",
+            "2. SPO": "Spouse",
+            "3. CHI": "Children"
+        }
+        mapped_labels = [label_map.get(l, l) for l in labels]
     
         # Format fungsi autopct: tampilkan persen + jumlah klaim
         def format_autopct(pct, allvals):
@@ -443,18 +450,12 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         
         wedges, texts, autotexts = ax.pie(
             sizes,
-            labels=None,
+            labels=mapped_labels,
             colors=['#1f77b4', '#4e91c7', '#a6c8ea'],
             autopct=lambda pct: format_autopct(pct, sizes),
             textprops=dict(color="black", fontsize=10, fontproperties=font_prop),
             startangle=90,
         )
-        label_map = {
-            "1. EMP": "Employee",
-            "2. SPO": "Spouse",
-            "3. CHI": "Children"
-        }
-        mapped_labels = [label_map.get(l, l) for l in labels]
     
         # Tambahkan legend di kanan pie chart
         legend = ax.legend(wedges, mapped_labels, title="Membership", loc="center left", bbox_to_anchor=(1, 0.5), title_fontproperties=font_prop)
