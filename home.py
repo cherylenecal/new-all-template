@@ -547,6 +547,10 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         fig.savefig(path, bbox_inches='tight')
         st.pyplot(fig)
         plt.close(fig)
+        if os.path.exists(path):
+            st.success(f"Tabel berhasil disimpan sebagai gambar: `{path}`")
+        else:
+            st.error("Gagal menyimpan tabel sebagai gambar.")
     
         diag_path.append((product, path))
 
