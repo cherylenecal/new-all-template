@@ -312,6 +312,53 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     with col6:
         display_metric(metrics_row2.iloc[2]['Metric'], metrics_row2.iloc[2]['Value']) # Assuming 6 metrics in total, adjust if needed
 
+    # Bersihkan nilai
+    summary_top_df['Formatted'] = summary_top_df['Value'].apply(
+        lambda v: f"{int(float(str(v).replace(',', ''))):,}" if str(v).replace(',', '').replace('.', '').isdigit() else v
+    )
+    
+    # Siapkan data tabel
+    cell_text = summary_top_df[['Metric', 'Formatted']].values.tolist()
+    
+    fig, ax = plt.subplots(figsize=(10, 2.5), dpi=150)
+    ax.axis('off')
+    
+    # Buat tabel
+    table = ax.table(
+        cellText=cell_text,
+        colLabels=['Metric', 'Value'],
+        cellLoc='center',
+        loc='center'
+    )
+    
+    # Styling tabel
+    table.auto_set_font_size(False)
+    table.set_fontsize(12)
+    table.scale(1.5, 2)
+    
+    for (i, j), cell in table.get_celld().items():
+        cell.set_edgecolor('black')
+        cell.set_linewidth(1)
+        if i == 0:
+            cell.set_facecolor('#0070C0')
+            cell.get_text().set_color('white')
+            cell.get_text().set_weight('bold')
+        else:
+            cell.set_facecolor('#fcfcfa' if i % 2 == 0 else 'white')
+            cell.get_text().set_color('black')
+    
+    # Simpan sebagai gambar
+    summary_path = "section1_summary_metrics.png"
+    fig.savefig(summary_path, bbox_inches='tight')
+    plt.close(fig)
+    
+    # Validasi simpan
+    import os
+    if os.path.exists(summary_path):
+        st.success(f"Summary metrics berhasil disimpan sebagai gambar: `{summary_path}`")
+    else:
+        st.error("Gagal menyimpan summary metrics.")
+        
     # Claim Ratio Summary Table (Using HTML/CSS for enhanced display)
     st.subheader("Claim Ratio Summary Table")
 
