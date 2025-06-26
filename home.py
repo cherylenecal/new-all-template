@@ -416,7 +416,6 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         ax3.bar_label(bars, labels=[f"{c:,}" for c in counts], padding=3, color='black')
     
         ax3.set_ylabel("Number of Claims", color='black')
-        ax3.set_title("Claim Count per Plan", color='black')
         plt.xticks(rotation=45, ha='right')
     
         bar_path = "section3_plan.png"
@@ -487,38 +486,58 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         st.error("Gagal menyimpan tabel sebagai gambar.")
 
     
-    # ─── Section 5: Top 10 Diagnoses by Product Type ──────────────────────────────
+   # Section 5: Top 10 Diagnoses by Product Type
     st.subheader("Top 10 Diagnoses by Product Type")
     diag_path = []
+    
     for product in claim_transformed['Product Type'].unique():
         dfp = (
-            claim_transformed[claim_transformed['Product Type']==product]
+            claim_transformed[claim_transformed['Product Type'] == product]
             .groupby('Diagnosis')['Sum of Billed']
-            .agg(['sum','count'])
-            .rename(columns={'sum':'Amount','count':'Qty'})
+            .agg(['sum', 'count'])
+            .rename(columns={'sum': 'Amount', 'count': 'Qty'})
             .reset_index()
         )
-        dfp['Amount'] /= 1_000_000
-        top10 = dfp.sort_values('Amount', ascending=False).head(10).iloc[::-1]  # flip for top-down
+        dfp['Amount'] /= 1_000_000  # convert to millions
+        top10 = dfp.sort_values('Amount', ascending=False).head(10).iloc[::-1]
     
-        fig, ax = plt.subplots(figsize=(6,4))
-        ax.barh(top10['Diagnosis'], top10['Qty'], color='#a6c8ea', label='Qty')
-        ax.barh(top10['Diagnosis'], top10['Amount'], left=0, color='#1f77b4', label='Amount (mil)', alpha=0.7)
-        # labels
-        for i,(qty,amt) in enumerate(zip(top10['Qty'], top10['Amount'])):
-            ax.text(qty, i, f'{qty:,}', va='center', ha='left', color='black')
-            ax.text(amt, i, f'{amt:,.1f}', va='center', ha='left', color='black')
+        diagnoses = top10['Diagnosis']
+        qty = top10['Qty']
+        amt = top10['Amount']
+    
+        y = range(len(diagnoses))
+        bar_width = 0.4
+    
+        fig, ax = plt.subplots(figsize=(8, 5))
+    
+        # Bar Qty di kiri
+        ax.barh([i - bar_width/2 for i in y], qty, height=bar_width, color='#a6c8ea', label='Qty')
+    
+        # Bar Amount di kanan
+        ax.barh([i + bar_width/2 for i in y], amt, height=bar_width, color='#1f77b4', alpha=0.8, label='Amount (mil)')
+    
+        # Labels Qty
+        for i, val in enumerate(qty):
+            ax.text(val, i - bar_width/2, f'{val:,}', va='center', ha='left', color='black')
+    
+        # Labels Amount
+        for i, val in enumerate(amt):
+            ax.text(val, i + bar_width/2, f'{val:,.1f}', va='center', ha='left', color='black')
+    
+        ax.set_yticks(y)
+        ax.set_yticklabels(diagnoses)
         ax.set_title(f"Top 10 Diagnoses: {product}")
         ax.set_xlabel("Value")
-        ax.legend(loc='lower right')
+        ax.legend(loc='best')
         plt.tight_layout()
     
         path = f"section5_diag_{product}.png"
         fig.savefig(path, bbox_inches='tight')
         st.pyplot(fig)
         plt.close(fig)
-        diag_path.append((product,path))
     
+        diag_path.append((product, path))
+
     # ─── Section 6: Top 10 Treatment Places by Claim Type ────────────────────────
     st.subheader("Top 10 Treatment Places by Claim Type")
     tp_path = []
