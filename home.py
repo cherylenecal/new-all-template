@@ -751,27 +751,74 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             st.error("Gagal menyimpan tabel sebagai gambar.")
 
 
-    # Generate PPT 
+    # Fungsi membuat PowerPoint Report
+    def create_ppt(path):
+        prs = Presentation("template.pptx")
+    
+        # Section 1 - Summary Metrics Table
+        if os.path.exists("section1_summary_metrics.png"):
+            slide = prs.slides.add_slide(prs.slide_layouts[1])
+            slide.shapes.title.text = "Summary Metrics"
+            slide.shapes.add_picture("section1_summary_metrics.png", Inches(1), Inches(1.5), width=Inches(6))
+    
+        # Section 1b - Claim Ratio Table
+        if os.path.exists("claim_ratio_table.png"):
+            slide = prs.slides.add_slide(prs.slide_layouts[1])
+            slide.shapes.title.text = "Claim Ratio Summary Table"
+            slide.shapes.add_picture("claim_ratio_table.png", Inches(1), Inches(1.5), width=Inches(6))
+    
+        # Section 2 - Pie Chart
+        if os.path.exists("section2_membership.png"):
+            slide = prs.slides.add_slide(prs.slide_layouts[1])
+            slide.shapes.title.text = "Claim Count per Membership Type"
+            slide.shapes.add_picture("section2_membership.png", Inches(1), Inches(1.5), width=Inches(6))
+    
+        # Section 3 - Bar Chart per Plan
+        if os.path.exists("section3_plan.png"):
+            slide = prs.slides.add_slide(prs.slide_layouts[1])
+            slide.shapes.title.text = "Claim Count per Plan"
+            slide.shapes.add_picture("section3_plan.png", Inches(1), Inches(1.5), width=Inches(6))
+    
+        # Section 4 - Monthly Product Chart
+        if os.path.exists("section4_month_product.png"):
+            slide = prs.slides.add_slide(prs.slide_layouts[1])
+            slide.shapes.title.text = "Claim Billed by Month and Product Type"
+            slide.shapes.add_picture("section4_month_product.png", Inches(1), Inches(1.5), width=Inches(6))
+    
+        # Section 4b - Monthly Product Table
+        if os.path.exists("section4_month_product_table.png"):
+            slide = prs.slides.add_slide(prs.slide_layouts[1])
+            slide.shapes.title.text = "Claim Billed Table"
+            slide.shapes.add_picture("section4_month_product_table.png", Inches(1), Inches(1.5), width=Inches(6))
+    
+        # Section 5 - Diagnoses by Product
+        for product, path in diag_path:
+            if os.path.exists(path):
+                slide = prs.slides.add_slide(prs.slide_layouts[1])
+                slide.shapes.title.text = f"Top 10 Diagnoses - {product}"
+                slide.shapes.add_picture(path, Inches(1), Inches(1.5), width=Inches(6))
+    
+        # Section 6 - Treatment Place by Claim Type
+        for claim_type, path in tp_path:
+            if os.path.exists(path):
+                slide = prs.slides.add_slide(prs.slide_layouts[1])
+                slide.shapes.title.text = f"Top 10 Treatment Places - {claim_type}"
+                slide.shapes.add_picture(path, Inches(1), Inches(1.5), width=Inches(6))
+    
+        # Section 7 - Top 10 Employee Table
+        if os.path.exists("section7_top10_employees.png"):
+            slide = prs.slides.add_slide(prs.slide_layouts[1])
+            slide.shapes.title.text = "Top 10 Employees"
+            slide.shapes.add_picture("section7_top10_employees.png", Inches(1), Inches(1.5), width=Inches(6))
+    
+        prs.save(path)
+    
+    # Tombol UI di akhir laporan
     st.markdown("---")
     st.subheader("Generate PowerPoint Report")
     ppt_filename_input = st.text_input("Enter PPT file name:", "Claim_Report")
     ppt_filename = (ppt_filename_input.strip() or "Claim_Report") + ".pptx"
-    ppt_filepath = ppt_filename                              # <= simpan di cwd
-    
-    def create_ppt(path):
-        prs = Presentation("template.pptx")
-        # Pie chart slide
-        if pie_path:
-            slide = prs.slides.add_slide(prs.slide_layouts[1])
-            slide.shapes.title.text = "Claim Count per Membership Type"
-            slide.shapes.add_picture(pie_path, Inches(1), Inches(1.5), width=Inches(6))
-        # Bar chart slide
-        if bar_path:
-            slide = prs.slides.add_slide(prs.slide_layouts[1])
-            slide.shapes.title.text = "Claim Count per Plan"
-            slide.shapes.add_picture(bar_path, Inches(1), Inches(1.5), width=Inches(6))
-        # … tambahkan slide lain sesuai kebutuhan …
-        prs.save(path)
+    ppt_filepath = ppt_filename
     
     if st.button("Generate PPT"):
         create_ppt(ppt_filepath)
