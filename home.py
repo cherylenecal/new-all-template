@@ -498,44 +498,33 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             .rename(columns={'sum': 'Amount', 'count': 'Qty'})
             .reset_index()
         )
-        dfp['Amount'] /= 1_000_000  # convert to millions
+        dfp['Amount'] /= 1_000_000  # jutaan
         top10 = dfp.sort_values('Amount', ascending=False).head(10).iloc[::-1]
     
-        diagnoses = top10['Diagnosis']
-        qty = top10['Qty']
-        amt = top10['Amount']
+        fig, ax = plt.subplots(figsize=(10, 6))
+        y = range(len(top10))
+        bar_height = 0.35
     
-        y = range(len(diagnoses))
-        bar_width = 0.4
-    
-        fig, ax = plt.subplots(figsize=(14, 7))
-    
-        # Bar Amount di atas (lebih tinggi posisi Y)
-        bars_amount = ax.barh([i + bar_width/2 for i in y], amt, height=bar_width, color='#1f77b4', alpha=0.8, label='Amount (mil)')
+        # Bar Amount di atas
+        ax.barh([i + bar_height / 2 for i in y], top10['Amount'], height=bar_height,
+                color='#1f77b4', label='Amount (mil)', alpha=0.9)
     
         # Bar Qty di bawah
-        bars_qty = ax.barh([i - bar_width/2 for i in y], qty, height=bar_width, color='#a6c8ea', label='Qty')
+        ax.barh([i - bar_height / 2 for i in y], top10['Qty'], height=bar_height,
+                color='#a6c8ea', label='Qty', alpha=0.9)
     
-        # Labels Amount
-        for i, val in enumerate(amt):
-            ax.text(val, i + bar_width/2, f'{val:,.1f}', va='center', ha='left', color='black')
-    
-        # Labels Qty
-        for i, val in enumerate(qty):
-            ax.text(val, i - bar_width/2, f'{val:,}', va='center', ha='left', color='black')
+        # Label jumlah
+        for i, (amt, qty) in enumerate(zip(top10['Amount'], top10['Qty'])):
+            ax.text(amt, i + bar_height / 2, f'{amt:,.1f}', va='center', ha='left', fontsize=11)
+            ax.text(qty, i - bar_height / 2, f'{qty:,}', va='center', ha='left', fontsize=11)
     
         ax.set_yticks(y)
-        ax.set_yticklabels(diagnoses)
-        ax.set_title(f"Top 10 Diagnoses: {product}")
-        ax.set_xlabel("Value")
-    
-        # Set urutan legend secara manual: Amount dulu, lalu Qty
-        handles, labels = ax.get_legend_handles_labels()
-        order = [0, 1]  # index 0: Amount, 1: Qty
-        ax.legend([handles[idx] for idx in order], [labels[idx] for idx in order], loc='best')
+        ax.set_yticklabels(top10['Diagnosis'], fontsize=12)
+        ax.set_title(f"Top 10 Diagnoses: {product}", fontsize=14)
+        ax.set_xlabel("Value", fontsize=12)
+        ax.legend(loc='lower right', fontsize=11)
     
         plt.tight_layout()
-    
         path = f"section5_diag_{product}.png"
         fig.savefig(path, bbox_inches='tight')
         st.pyplot(fig)
