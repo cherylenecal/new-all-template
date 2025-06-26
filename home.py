@@ -353,7 +353,12 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     st.markdown(format_claim_ratio_table(summary_cr_df), unsafe_allow_html=True)
     
     # Simpan table ke PNG tanpa Kaleido
-    save_table_as_image(summary_cr_df, "claim_ratio_table.png")
+    summary_table_name = "claim_ratio_table.png"
+    save_table_as_image(summary_cr_df, summary_table_name)
+    if os.path.exists(summary_table_name):
+        st.success(f"Tabel berhasil disimpan sebagai gambar: `{summary_table_name}`")
+    else:
+        st.error("Gagal menyimpan tabel sebagai gambar.")
 
     
     # Section 2: Claim per Membership (Pie Chart)
