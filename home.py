@@ -14,7 +14,7 @@ from matplotlib import rcParams, font_manager
 # Load font dari file .otf
 font_path = "VAGRoundedStd-Light.otf"
 font_prop = fm.FontProperties(fname=font_path)
-mpl.rcParams['font.family'] = font_prop.get_name()
+plt.rcParams['font.family'] = font_prop.get_name()
 
 # Claim data functions
 def filter_claim_data(df):
