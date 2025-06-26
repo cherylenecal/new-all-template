@@ -549,9 +549,6 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         # Terapkan font ke semua elemen axis
         apply_font_to_ax(ax, font_prop)
     
-        # Judul & label dengan font_prop
-        ax.set_title("Claim Billed by Month and Product Type",
-                     fontproperties=font_prop, fontsize=18)
         ax.set_ylabel("Sum of Billed",
                       fontproperties=font_prop, fontsize=14)
     
@@ -621,7 +618,8 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         n = len(top10)
         fig, ax = plt.subplots(figsize=(15, 0.65 * n + 2))
-    
+        apply_font_to_ax(ax, font_prop)  # set ke axis default
+
         # Dynamic font size
         max_label_length = max(top10['Diagnosis'].str.len())
         label_font = 14 if max_label_length > 40 else 15 if max_label_length > 30 else 16
@@ -640,20 +638,20 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         # Label angka di samping bar
         for i, (amt, qty) in enumerate(zip(top10['Amount'], top10['Qty'])):
-            ax.text(amt + 0.5, i + bar_height/2, f'{amt:,.0f}', va='center', fontsize=value_font, color='black')
-            ax.text(qty + 0.5, i - bar_height/2, f'{qty:,}', va='center', fontsize=value_font, color='black')
+            ax.text(amt + 0.5, i + bar_height/2, f'{amt:,.0f}', va='center', fontsize=value_font, color='black', fontproperties=font_prop)
+            ax.text(qty + 0.5, i - bar_height/2, f'{qty:,}', va='center', fontsize=value_font, color='black', fontproperties=font_prop)
     
         # Label sumbu Y
-        ax.set_yticks(y)
-        ax.set_yticklabels(top10['Diagnosis'], fontsize=label_font)
+        ax.set_yticks(y, fontproperties=font_prop)
+        ax.set_yticklabels(top10['Diagnosis'], fontsize=label_font, fontproperties=font_prop)
     
         # Judul dan axis
-        ax.set_title(f"Top 10 Diagnoses: {product}", fontsize=label_font + 4, weight='bold')
-        ax.set_xlabel("Value", fontsize=label_font)
-        ax.tick_params(axis='x', labelsize=label_font)
+        ax.set_title(f"{product}", fontsize=label_font + 4, weight='bold', fontproperties=font_prop)
+        ax.set_xlabel("Value", fontsize=label_font, fontproperties=font_prop)
+        ax.tick_params(axis='x', labelsize=label_font, fontproperties=font_prop)
     
         # Legend
-        ax.legend(loc='lower right', fontsize=label_font, frameon=True)
+        ax.legend(loc='lower right', fontsize=label_font, frameon=True, fontproperties=font_prop)
     
         # Otomatis set lebar sumbu X
         max_val = max(top10['Amount'].max(), top10['Qty'].max())
