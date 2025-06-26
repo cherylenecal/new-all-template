@@ -161,6 +161,37 @@ def save_to_excel(claim_df, benefit_df, summary_top_df, claim_ratio_df, filename
     output.seek(0)
     return output, filename
 
+def save_table_as_image(df, filename):
+    fig, ax = plt.subplots(figsize=(len(df.columns) * 2.5, len(df) * 0.6 + 1), dpi=150)
+    ax.axis('off')
+
+    table = ax.table(
+        cellText=df.values,
+        colLabels=df.columns,
+        cellLoc='center',
+        loc='center'
+    )
+
+    # Styling
+    for (i, j), cell in table.get_celld().items():
+        cell.set_edgecolor('black')
+        cell.set_linewidth(1)
+        if i == 0:
+            cell.set_facecolor('#0070C0')
+            cell.get_text().set_color('white')
+            cell.get_text().set_weight('bold')
+        else:
+            cell.set_facecolor('#fcfcfa' if i % 2 == 0 else 'white')
+            cell.get_text().set_color('black')
+
+    table.auto_set_font_size(False)
+    table.set_fontsize(11)
+    table.scale(1, 1.5)
+
+    plt.tight_layout()
+    fig.savefig(filename, bbox_inches='tight')
+    plt.close(fig)
+
 # Streamlit APP UI
 st.title("Template - Standardisasi Report")
 
@@ -442,7 +473,6 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         plt.close()
     
    # Tabel detail
-    st.subheader("Claim Billed Details by Month and Product Type")
     
     # Format angka dengan koma ribuan dan tanpa index tambahan
     pivot_formatted = pivot.copy()
@@ -454,6 +484,11 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
     # Tampilkan tanpa index tambahan
     st.dataframe(final_table, use_container_width=True, hide_index=True)
+    save_table_as_image(final_table, "section4_month_product_table.png")
+    if os.path.exists("section4_month_product_table.png"):
+        st.success(f"Tabel berhasil disimpan sebagai gambar: `{table_filename}`")
+    else:
+        st.error("Gagal menyimpan tabel sebagai gambar.")
 
     
     # ─── Section 5: Top 10 Diagnoses by Product Type ──────────────────────────────
