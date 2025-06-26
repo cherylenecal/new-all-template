@@ -449,7 +449,8 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     pivot_formatted = pivot_formatted.applymap(lambda x: f"{int(x):,}" if not pd.isna(x) else "")
     
     # Gabungkan kembali Settled Month ke dalam dataframe tanpa index
-    final_table = pivot_formatted.reset_index().drop(columns=['index'])
+    final_table = pivot_formatted.reset_index()
+    final_table = final_table.drop(columns=['index'], errors='ignore')
     
     # Tampilkan tanpa index tambahan
     st.dataframe(final_table, use_container_width=True, hide_index=True)
