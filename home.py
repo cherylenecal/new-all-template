@@ -622,8 +622,17 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
 
         # Dynamic font size
         max_label_length = max(top10['Diagnosis'].str.len())
-        label_font = 16 if max_label_length > 40 else 18 if max_label_length > 30 else 17
-        value_font = max(16, label_font - 2)
+
+        # Tetapkan font minimal yang besar dan skala naik sesuai panjang label
+        if   max_label_length > 50:
+            label_font = 24
+        elif max_label_length > 30:
+            label_font = 26
+        else:
+            label_font = 28
+        
+        # Value font selalu 2 poin lebih kecil dari label_font
+        value_font = label_font - 2
         bar_height = 0.35
     
         y = range(n)
