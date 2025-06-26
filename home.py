@@ -522,7 +522,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         # Label angka di samping bar
         for i, (amt, qty) in enumerate(zip(top10['Amount'], top10['Qty'])):
-            ax.text(amt + 0.5, i + bar_height/2, f'{amt:,.1f}', va='center', fontsize=value_font, color='black')
+            ax.text(amt + 0.5, i + bar_height/2, f'{amt:,.0f}', va='center', fontsize=value_font, color='black')
             ax.text(qty + 0.5, i - bar_height/2, f'{qty:,}', va='center', fontsize=value_font, color='black')
     
         # Label sumbu Y
