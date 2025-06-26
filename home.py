@@ -445,7 +445,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             labels=None,
             colors=['#1f77b4', '#4e91c7', '#a6c8ea'],
             autopct=lambda pct: format_autopct(pct, sizes),
-            textprops=dict(color="black", fontsize=10),
+            textprops=dict(color="black", fontsize=10, fontproperties=font_prop),
             startangle=90,
         )
     
