@@ -804,14 +804,13 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
                 slide.shapes.add_picture(path_img, Inches(1), Inches(1.5), width=Inches(7))
                 new_slides.append(slide)
     
-        # Pindahkan semua new slides ke index 1
-        for i in range(len(new_slides)):
+        for _ in range(len(new_slides)):
             slide = prs.slides[-1]
-            xml_slides = prs.slides._sldIdLst  # private API
+            xml_slides = prs.slides._sldIdLst
             slides = list(xml_slides)
             xml_slides.remove(slides[-1])
-            xml_slides.insert(1 + i, slides[-1])  # sisipkan setelah slide 0 (judul)
-    
+            xml_slides.insert(1, slides[-1])  # << selalu di posisi ke-1
+
         prs.save(path)
 
     
