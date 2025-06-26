@@ -508,7 +508,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         y = range(len(diagnoses))
         bar_width = 0.4
     
-        fig, ax = plt.subplots(figsize=(10, 7))
+        fig, ax = plt.subplots(figsize=(12, 7))
     
         # Bar Amount di atas (lebih tinggi posisi Y)
         bars_amount = ax.barh([i + bar_width/2 for i in y], amt, height=bar_width, color='#1f77b4', alpha=0.8, label='Amount (mil)')
