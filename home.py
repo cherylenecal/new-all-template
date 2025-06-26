@@ -477,13 +477,14 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         # Buat bar chart
         fig3, ax3 = plt.subplots(figsize=(10, 7))
+        apply_font_to_ax(ax3, font_prop)  # set ke axis default
         bars = ax3.bar(plans, counts, color='#1f77b4')
     
         # Tampilkan count sebagai label bar
         ax3.bar_label(bars, labels=[f"{c:,}" for c in counts], padding=3, color='black')
     
-        ax3.set_ylabel("Number of Claims", color='black')
-        plt.xticks(rotation=45, ha='right')
+        ax3.set_ylabel("Number of Claims", color='black', fontproperties=font_prop)
+        plt.xticks(rotation=45, ha='right', fontproperties=font_prop)
     
         bar_path = "section3_plan.png"
         fig3.savefig(bar_path, bbox_inches='tight')
