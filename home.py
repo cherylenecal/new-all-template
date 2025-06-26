@@ -396,39 +396,38 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     pie_path = None
     
     if 'Membership' in claim_transformed.columns:
+        # Hitung jumlah klaim per Membership
         mc = claim_transformed['Membership'].value_counts()
         labels = mc.index.tolist()
         sizes = mc.values.tolist()
     
-        fig, ax = plt.subplots(figsize=(6, 5))  # Perbesar ukuran chart
+        # Format fungsi autopct: tampilkan persen + jumlah klaim
+        def format_autopct(pct, allvals):
+            absolute = int(round(pct/100.*sum(allvals)))
+            return f"{pct:.1f}%\n({absolute:,})"
     
-        # Format label persentase dan jumlah
-        def make_autopct(sizes):
-            def my_autopct(pct):
-                total = sum(sizes)
-                val = int(pct / 100.0 * total)
-                return f"{pct:.1f}%\n({val:,})"
-            return my_autopct
-    
+        # Buat figure lebih besar dan simetris
+        fig, ax = plt.subplots(figsize=(7, 5))
         wedges, texts, autotexts = ax.pie(
             sizes,
-            labels=None,  # label di luar pie
+            labels=None,
             colors=['#1f77b4', '#4e91c7', '#a6c8ea'],
-            autopct=make_autopct(sizes),
-            textprops=dict(color="black", fontsize=10)
+            autopct=lambda pct: format_autopct(pct, sizes),
+            textprops=dict(color="black", fontsize=10),
+            startangle=90
         )
     
-        ax.set_title("Claim Count per Membership", color='black', fontsize=14)
-        ax.axis('equal')  # Equal aspect ratio agar pie jadi lingkaran
-    
-        # Tambahkan legend di samping
+        # Tambahkan legend di kanan pie chart
         ax.legend(wedges, labels, title="Membership", loc="center left", bbox_to_anchor=(1, 0.5))
+        ax.set_title("Claim Count per Membership", fontsize=14)
+        ax.axis('equal')  # Lingkaran bulat, bukan elips
     
         pie_path = "section2_membership.png"
         fig.savefig(pie_path, bbox_inches='tight')
         st.pyplot(fig)
         plt.close(fig)
     
+        # Cek apakah file berhasil disimpan
         if os.path.exists(pie_path):
             st.success(f"Chart berhasil disimpan sebagai gambar: `{pie_path}`")
         else:
