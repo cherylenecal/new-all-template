@@ -764,7 +764,6 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             title_tf.paragraphs[0].font.bold = True
     
     def create_ppt(path):
-        prs = Presentation("template.pptx")
         sections = [
             ("section1_summary_metrics.png", "Summary Metrics"),
             ("claim_ratio_table.png", "Claim Ratio Summary Table"),
@@ -800,6 +799,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     # =============================
     st.markdown("---")
     st.subheader("📊 Generate PowerPoint Report")
+    prs = Presentation("template.pptx")
     
     # ⬇️ Input untuk nama file
     ppt_filename_input = st.text_input("Enter PPT file name (without .pptx):", "Claim_Report")
