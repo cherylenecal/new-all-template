@@ -825,6 +825,13 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         prs.save(path)
     
     # Tombol di Streamlit
+    # Pilihan untuk rename file
+    st.markdown("---")
+    st.subheader("Generate PowerPoint Report")
+    
+    ppt_filename_input = st.text_input("Enter PPT file name (without extension):", "Claim_Report")
+    ppt_filename = (ppt_filename_input.strip() or "Claim_Report") + ".pptx"
+    ppt_filepath = ppt_filename  # disimpan di folder kerja saat ini
     if st.button("Generate PPT"):
         create_ppt(ppt_filepath)
         with open(ppt_filepath, "rb") as f:
