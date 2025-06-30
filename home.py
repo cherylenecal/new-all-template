@@ -645,7 +645,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
                 text.set_fontsize(18)
         plt.tight_layout()
 
-        print(font_prop.get_name())
+        st.markdown(f"**Font yang digunakan:** `{font_prop.get_name()}`")
     
         # Simpan & tampilkan
         month_prod_path = "section4_month_product.png"
