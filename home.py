@@ -428,23 +428,31 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     st.markdown(format_claim_ratio_table(summary_cr_df), unsafe_allow_html=True)
     
     # 2) Save to PNG with matplotlib table (font_prop & larger figsize)
-    def save_claim_ratio_table_image(df, filename):
-        # Ukuran figure lebih besar agar rapi
-        fig, ax = plt.subplots(figsize=(12, df.shape[0] * 0.5 + 2), dpi=150)
+        def save_claim_ratio_table_image(df, filename):
+        # 1) Buat figsize yang lebar: width tergantung jumlah kolom
+        ncols = len(df.columns)
+        fig_width = max(12, ncols * 2)            # misal 2 inch per kolom, minimal 12"
+        fig_height = df.shape[0] * 0.5 + 2        # 0.5" per baris + margin
+        fig, ax = plt.subplots(figsize=(fig_width, fig_height), dpi=150)
         ax.axis('off')
     
+        # 2) Buat tabel
         tbl = ax.table(
             cellText=df.values,
             colLabels=df.columns,
             cellLoc='center',
             loc='center'
         )
-        # Styling border & background
+    
+        # 3) Otomatis set lebar kolom
+        tbl.auto_set_column_width(col=list(range(ncols)))
+    
+        # 4) Styling
         tbl.auto_set_font_size(False)
-        tbl.scale(1.5, 1.8)
-        # Header & cell font sizes
-        HEADER_FS = 20
-        CELL_FS   = 18
+        tbl.scale(1.0, 1.5)   # sesuaikan Y-scale agar tidak terlalu tinggi
+    
+        HEADER_FS = 18
+        CELL_FS   = 14
     
         for (i, j), cell in tbl.get_celld().items():
             cell.set_edgecolor('black')
@@ -472,7 +480,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     if os.path.exists(summary_table_name):
         st.success(f"Tabel berhasil disimpan sebagai gambar: `{summary_table_name}`")
         # Tampilkan langsung gambarnya
-        st.image(summary_table_name, caption="Claim Ratio Summary Table", use_column_width=True)
+        st.image(summary_table_name, caption="Claim Ratio Summary Table", use_container_width=True)
     else:
         st.error("Gagal menyimpan tabel sebagai gambar.")
 
