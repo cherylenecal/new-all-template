@@ -645,8 +645,10 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
                 text.set_fontsize(18)
         plt.tight_layout()
 
-        st.markdown(f"**Font yang digunakan:** `{font_prop.get_name()}`")
-    
+        x_labels = [tick.get_text() for tick in ax.get_xticklabels()]
+        st.markdown("**X-axis tick labels (bulan-bulan):**")
+        st.write(x_labels)    
+        
         # Simpan & tampilkan
         month_prod_path = "section4_month_product.png"
         fig.savefig(month_prod_path, bbox_inches='tight')
