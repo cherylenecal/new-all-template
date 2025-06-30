@@ -616,16 +616,16 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         ax.tick_params(
             axis='x',
             rotation=45,
-            labelsize=16,
-            pad=8
+            labelsize=20,
+            pad=10
         )
         for lbl in ax.get_xticklabels():
             lbl.set_fontproperties(font_prop)
 
         ax.tick_params(
             axis='y',
-            labelsize=16,
-            pad=8
+            labelsize=20,
+            pad=10
         )
         for lbl in ax.get_yticklabels():
             lbl.set_fontproperties(font_prop)
@@ -635,7 +635,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         if legend:
             for text in legend.get_texts():
                 text.set_fontproperties(font_prop)
-                text.set_fontsize(16)
+                text.set_fontsize(18)
         plt.tight_layout(pad=3)
     
         # Simpan & tampilkan
