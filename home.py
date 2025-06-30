@@ -592,27 +592,51 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         pivot = mbp.pivot(index='Settled Month', columns='Product Type', values='Sum of Billed').fillna(0)
     
         # Buat bar chart dan dapatkan ax
-        fig, ax = plt.subplots(figsize=(10, 7))
+        fig, ax = plt.subplots(figsize=(12, 8))
         pivot.plot(kind='bar', ax=ax)
     
         # Terapkan font ke semua elemen axis
         apply_font_to_ax(ax, font_prop)
-    
-        ax.set_ylabel("Sum of Billed",
-                      fontproperties=font_prop, fontsize=14)
+
+        # Axis labels
+        ax.set_xlabel(
+            "Settled Month",
+            fontproperties=font_prop,
+            fontsize=18,
+            labelpad=15
+        )
+        ax.set_ylabel(
+            "Sum of Billed",
+            fontproperties=font_prop,
+            fontsize=18,
+            labelpad=15
+        )
     
         # Format tick labels
-        ax.tick_params(axis='x', rotation=45, labelsize=12)
+        ax.tick_params(
+            axis='x',
+            rotation=45,
+            labelsize=16,
+            pad=8
+        )
         for lbl in ax.get_xticklabels():
             lbl.set_fontproperties(font_prop)
-    
+
+        ax.tick_params(
+            axis='y',
+            labelsize=16,
+            pad=8
+        )
+        for lbl in ax.get_yticklabels():
+            lbl.set_fontproperties(font_prop)
+            
         # Jika ada legend, terapkan font juga
         legend = ax.get_legend()
         if legend:
             for text in legend.get_texts():
                 text.set_fontproperties(font_prop)
-    
-        plt.tight_layout()
+                text.set_fontsize(16)
+        plt.tight_layout(pad=3)
     
         # Simpan & tampilkan
         month_prod_path = "section4_month_product.png"
