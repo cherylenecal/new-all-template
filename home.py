@@ -383,7 +383,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     st.image(
     summary_path,
     caption="Summary Metrics Table (akan dimasukkan ke PPT)",
-    use_column_width=True
+    use_container_width=True
     )
 
         
