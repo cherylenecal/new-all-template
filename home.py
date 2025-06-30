@@ -387,25 +387,26 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     )
 
         
-    # Claim Ratio Summary Table (Using HTML/CSS for enhanced display)
+    # Claim Ratio Summary Table (Enhanced Display & PNG output)
     st.subheader("Claim Ratio Summary Table")
-
+    
+    # 1) HTML-render (masih pakai CSS, ukuran font dinaikkan)
     def format_claim_ratio_table(df):
         html = "<style>"
-        html += "table { border-collapse: collapse; width: 100%; }"
-        html += "th, td { border: 1px solid #333; padding: 8px; text-align: center; color: black; }"
-        html += "th { background-color: #0070C0; font-weight: bold; color: white; }"
+        # Bikin font size header & sel lebih besar
+        html += "table { border-collapse: collapse; width: 100%; font-family: 'VAG Rounded Std Light', sans-serif; }"
+        html += "th, td { border: 1px solid #333; padding: 12px; text-align: center; }"
+        html += "th { background-color: #0070C0; font-weight: bold; color: white; font-size: 18px; }"
+        html += "td { font-size: 16px; color: black; }"
         html += "tr:nth-child(even) { background-color: #fcfcfa; }"
         html += "tr:hover { background-color: #ddd; }"
         html += "</style>"
-        html += "<table><thead><tr>"
     
-        # Table headers
+        html += "<table><thead><tr>"
         for col in df.columns:
             html += f"<th>{col}</th>"
         html += "</tr></thead><tbody>"
     
-        # Table rows
         for _, row in df.iterrows():
             html += "<tr>"
             for col in df.columns:
@@ -416,24 +417,65 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
                     elif col == 'Est Claim' and not pd.isna(value):
                         content = f"{value:,.2f}"
                     else:
-                        content = f"{int(value):,}"  # Pastikan bulat tanpa desimal
+                        content = f"{int(value):,}"
                 else:
                     content = value
                 html += f"<td>{content}</td>"
             html += "</tr>"
         html += "</tbody></table>"
         return html
-
-    # Tampilkan HTML seperti biasa
+    
     st.markdown(format_claim_ratio_table(summary_cr_df), unsafe_allow_html=True)
     
-    # Simpan table ke PNG tanpa Kaleido
+    # 2) Save to PNG with matplotlib table (font_prop & larger figsize)
+    def save_claim_ratio_table_image(df, filename):
+        # Ukuran figure lebih besar agar rapi
+        fig, ax = plt.subplots(figsize=(12, df.shape[0] * 0.5 + 2), dpi=150)
+        ax.axis('off')
+    
+        tbl = ax.table(
+            cellText=df.values,
+            colLabels=df.columns,
+            cellLoc='center',
+            loc='center'
+        )
+        # Styling border & background
+        tbl.auto_set_font_size(False)
+        tbl.scale(1.5, 1.8)
+        # Header & cell font sizes
+        HEADER_FS = 20
+        CELL_FS   = 18
+    
+        for (i, j), cell in tbl.get_celld().items():
+            cell.set_edgecolor('black')
+            cell.set_linewidth(1)
+            txt = cell.get_text()
+            txt.set_fontproperties(font_prop)
+            if i == 0:
+                cell.set_facecolor('#0070C0')
+                txt.set_color('white')
+                txt.set_weight('bold')
+                txt.set_fontsize(HEADER_FS)
+            else:
+                cell.set_facecolor('#fcfcfa' if i % 2 == 0 else 'white')
+                txt.set_color('black')
+                txt.set_fontsize(CELL_FS)
+    
+        plt.tight_layout()
+        fig.savefig(filename, bbox_inches='tight')
+        plt.close(fig)
+
+    # Simpan dan tampilkan PNG
     summary_table_name = "claim_ratio_table.png"
-    save_table_as_image(summary_cr_df, summary_table_name)
+    save_claim_ratio_table_image(summary_cr_df, summary_table_name)
+    
     if os.path.exists(summary_table_name):
         st.success(f"Tabel berhasil disimpan sebagai gambar: `{summary_table_name}`")
+        # Tampilkan langsung gambarnya
+        st.image(summary_table_name, caption="Claim Ratio Summary Table", use_column_width=True)
     else:
         st.error("Gagal menyimpan tabel sebagai gambar.")
+
 
     
     # Section 2: Claim per Membership (Pie Chart)
