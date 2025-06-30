@@ -429,27 +429,41 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
     # 2) Save to PNG with matplotlib table (font_prop & larger figsize)
     def save_claim_ratio_table_image(df, filename):
-        # 1) Buat figsize yang lebar: width tergantung jumlah kolom
-        ncols = len(df.columns)
-        fig_width = max(12, ncols * 2)            # misal 2 inch per kolom, minimal 12"
-        fig_height = df.shape[0] * 0.5 + 2        # 0.5" per baris + margin
+        # 1) Buat copy dan format angka sesuai kolom
+        df_fmt = df.copy()
+        for col in df_fmt.columns:
+            if col == 'CR':
+                df_fmt[col] = df_fmt[col].apply(lambda v: f"{v:.2f}%")
+            elif col == 'Est Claim':
+                df_fmt[col] = df_fmt[col].apply(lambda v: f"{v:,.2f}")
+            else:
+                # Coba ubah jadi int lalu format ribuan
+                df_fmt[col] = df_fmt[col].apply(
+                    lambda v: f"{int(v):,}" if pd.notna(v) and isinstance(v, (int, float)) else v
+                )
+    
+        # 2) Tentukan ukuran figure dinamis
+        ncols = len(df_fmt.columns)
+        fig_width = max(12, ncols * 2)            
+        fig_height = df_fmt.shape[0] * 0.5 + 2    
+    
         fig, ax = plt.subplots(figsize=(fig_width, fig_height), dpi=150)
         ax.axis('off')
     
-        # 2) Buat tabel
+        # 3) Buat tabel dengan cellText dari df_fmt.values (semua sudah string)
         tbl = ax.table(
-            cellText=df.values,
-            colLabels=df.columns,
+            cellText=df_fmt.values.tolist(),
+            colLabels=df_fmt.columns.tolist(),
             cellLoc='center',
             loc='center'
         )
     
-        # 3) Otomatis set lebar kolom
+        # 4) Otomatis set lebar kolom
         tbl.auto_set_column_width(col=list(range(ncols)))
     
-        # 4) Styling
+        # 5) Styling & font
         tbl.auto_set_font_size(False)
-        tbl.scale(1.0, 1.5)   # sesuaikan Y-scale agar tidak terlalu tinggi
+        tbl.scale(1.0, 1.5)
     
         HEADER_FS = 18
         CELL_FS   = 14
