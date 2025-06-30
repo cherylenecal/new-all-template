@@ -298,18 +298,18 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     # Prepare data for horizontal view
     metrics_row1 = summary_top_df.iloc[0:3]
     metrics_row2 = summary_top_df.iloc[3:]
-
-    # Function to display metric with formatted text
+    
     def display_metric(metric_name, metric_value):
-        # Coba ubah ke float lalu ke integer jika bisa, agar menghapus desimal
         try:
             formatted_value = f"{int(float(str(metric_value).replace(',', ''))):,}"
         except:
-            formatted_value = metric_value  # fallback ke original
-        st.markdown(f"<p style='color: #0067B1; font-size: 18px; margin-bottom: 0;'>{metric_name}</p>"
-                    f"<p style='color: #0067B1; font-size: 24px; font-weight: bold; margin-top: 0;'>{metric_value}</p>",
-                    unsafe_allow_html=True)
-
+            formatted_value = metric_value
+        st.markdown(
+            f"<p style='color: #0067B1; font-size: 18px; margin-bottom: 0;'>{metric_name}</p>"
+            f"<p style='color: #0067B1; font-size: 24px; font-weight: bold; margin-top: 0;'>{metric_value}</p>",
+            unsafe_allow_html=True
+        )
+    
     col1, col2, col3 = st.columns(3)
     with col1:
         display_metric(metrics_row1.iloc[0]['Metric'], metrics_row1.iloc[0]['Value'])
@@ -317,27 +317,26 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         display_metric(metrics_row1.iloc[1]['Metric'], metrics_row1.iloc[1]['Value'])
     with col3:
         display_metric(metrics_row1.iloc[2]['Metric'], metrics_row1.iloc[2]['Value'])
-
+    
     col4, col5, col6 = st.columns(3)
     with col4:
         display_metric(metrics_row2.iloc[0]['Metric'], metrics_row2.iloc[0]['Value'])
     with col5:
         display_metric(metrics_row2.iloc[1]['Metric'], metrics_row2.iloc[1]['Value'])
     with col6:
-        display_metric(metrics_row2.iloc[2]['Metric'], metrics_row2.iloc[2]['Value']) # Assuming 6 metrics in total, adjust if needed
-
-    # Bersihkan nilai
-    summary_top_df['Formatted'] = summary_top_df['Value'].apply(
-        lambda v: f"{int(float(str(v).replace(',', ''))):,}" if str(v).replace(',', '').replace('.', '').isdigit() else v
-    )
+        display_metric(metrics_row2.iloc[2]['Metric'], metrics_row2.iloc[2]['Value'])
     
-    # Siapkan data tabel
+    # Bersihkan nilai dan siapkan tabel
+    summary_top_df['Formatted'] = summary_top_df['Value'].apply(
+        lambda v: f"{int(float(str(v).replace(',', ''))):,}"
+        if str(v).replace(',', '').replace('.', '').isdigit() else v
+    )
     cell_text = summary_top_df[['Metric', 'Formatted']].values.tolist()
     
-    fig, ax = plt.subplots(figsize=(10, 2.5), dpi=150)
+    # ← Ukuran figur diperbesar agar jelas di PPT
+    fig, ax = plt.subplots(figsize=(14, 3), dpi=150)
     ax.axis('off')
     
-    # Buat tabel
     table = ax.table(
         cellText=cell_text,
         colLabels=['Metric', 'Value'],
@@ -345,33 +344,41 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         loc='center'
     )
     
-    # Styling tabel
+    # Styling tabel & terapkan VAG Rounded Std Light
     table.auto_set_font_size(False)
-    table.set_fontsize(12)
+    # Anda bisa atur ukuran header dan isi sel berbeda jika suka
+    HEADER_FSIZE = 16
+    CELL_FSIZE   = 14
     table.scale(1.5, 2)
     
     for (i, j), cell in table.get_celld().items():
         cell.set_edgecolor('black')
         cell.set_linewidth(1)
+        txt = cell.get_text()
+        # terapkan font_prop untuk setiap sel
+        txt.set_fontproperties(font_prop)
         if i == 0:
             cell.set_facecolor('#0070C0')
-            cell.get_text().set_color('white')
-            cell.get_text().set_weight('bold')
+            txt.set_color('white')
+            txt.set_weight('bold')
+            txt.set_fontsize(HEADER_FSIZE)
         else:
             cell.set_facecolor('#fcfcfa' if i % 2 == 0 else 'white')
-            cell.get_text().set_color('black')
+            txt.set_color('black')
+            txt.set_fontsize(CELL_FSIZE)
     
-    # Simpan sebagai gambar
+    # Simpan sebagai PNG
     summary_path = "section1_summary_metrics.png"
     fig.savefig(summary_path, bbox_inches='tight')
     plt.close(fig)
     
-    # Validasi simpan
+    # Validasi
     import os
     if os.path.exists(summary_path):
         st.success(f"Summary metrics berhasil disimpan sebagai gambar: `{summary_path}`")
     else:
         st.error("Gagal menyimpan summary metrics.")
+
         
     # Claim Ratio Summary Table (Using HTML/CSS for enhanced display)
     st.subheader("Claim Ratio Summary Table")
