@@ -416,8 +416,8 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         # ukuran figure dinamis
         ncols = len(headers)
         nrows = len(cell_text) + 1
-        fig_width = max(14, ncols * 3)
-        fig_height = max(6, nrows * 0.6)
+        fig_width = max(18, ncols * 3)
+        fig_height = max(9, nrows * 0.6)
     
         fig, ax = plt.subplots(figsize=(fig_width, fig_height), dpi=150)
         ax.axis('off')
