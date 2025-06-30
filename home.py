@@ -413,9 +413,9 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
                 value = row[col]
                 if isinstance(value, (int, float)):
                     if col == 'CR' and not pd.isna(value):
-                        content = f"{value:.2f}%"
+                        content = f"{value:,}%"
                     elif col == 'Est Claim' and not pd.isna(value):
-                        content = f"{value:,.2f}"
+                        content = f"{value:,}"
                     else:
                         content = f"{int(value):,}"
                 else:
