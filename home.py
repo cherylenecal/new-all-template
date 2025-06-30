@@ -432,7 +432,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         )
     
         tbl.auto_set_font_size(False)
-        tbl.scale(1.0, 2.5)
+        tbl.scale(1.0, 1.5)
         row_height = 1.0 / nrows
         HEADER_FS, CELL_FS = 18, 16
     
