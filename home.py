@@ -432,11 +432,11 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         tbl.auto_set_column_width(col=list(range(ncols)))
         tbl.auto_set_font_size(False)
         # Setelah semuanya siap, set height tiap cell
-        # row_h dalam axis fraction: tinggi axes dikali frac = cell height
+        # row_height dalam axis fraction: tinggi axes dikali frac = cell height
         axis_pos = ax.get_position()  # BBox: [xmin, ymin, xmax, ymax]
         axis_h = axis_pos.height
         # kita bagi axis height ke nrows, lalu kurangi sedikit agar ada jarak
-        row_h = axis_h / nrows * 0.9
+        row_height = axis_h / nrows * 0.9
         HEADER_FS, CELL_FS = 18, 16
     
         for (i, j), cell in tbl.get_celld().items():
