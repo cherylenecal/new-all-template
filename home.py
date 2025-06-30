@@ -416,18 +416,19 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         # ukuran figure dinamis
         ncols = len(headers)
         nrows = len(cell_text) + 1
-        fig_width = max(18, ncols * 3)
-        fig_height = max(9, nrows * 0.6)
+        fig_width = max(16, ncols * 2.5)
+        fig_height = df.shape[0] * 0.5 + 2
     
         fig, ax = plt.subplots(figsize=(fig_width, fig_height), dpi=150)
         ax.axis('off')
-    
+
+        widths = [0.4] + [0.6/(ncols-1)] * (ncols-1)
         tbl = ax.table(
             cellText=cell_text,
             colLabels=headers,
             cellLoc='center',
             loc='center',
-            colWidths=[1.0/ncols]*ncols
+            colWidths=widths
         )
     
         tbl.auto_set_font_size(False)
