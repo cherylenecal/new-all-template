@@ -416,8 +416,8 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         # ukuran figure dinamis
         ncols = len(headers)
         nrows = len(cell_text) + 1
-        fig_width = max(12, ncols * 3)
-        fig_height = max(4, nrows * 0.6)
+        fig_width = max(14, ncols * 3)
+        fig_height = max(6, nrows * 0.6)
     
         fig, ax = plt.subplots(figsize=(fig_width, fig_height), dpi=150)
         ax.axis('off')
@@ -455,8 +455,6 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     # Simpan dan tampilkan PNG
     summary_table_name = "claim_ratio_table.png"
     save_claim_ratio_table_image(summary_cr_df, summary_table_name)
-    st.image(summary_table_name, caption="Claim Ratio Summary Table", use_container_width=True)
-
     if os.path.exists(summary_table_name):
         st.success(f"Tabel berhasil disimpan sebagai gambar: `{summary_table_name}`")
         st.image(summary_table_name, caption="Claim Ratio Summary Table", use_container_width=True)
