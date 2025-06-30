@@ -598,10 +598,6 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         # Terapkan font ke semua elemen axis
         apply_font_to_ax(ax, font_prop)
 
-        x_labels = [tick.get_text() for tick in ax.get_xticklabels()]
-        st.markdown("**X-axis tick labels (bulan-bulan):**")
-        st.write(x_labels)   
-
         # Axis labels
         ax.set_xlabel(
             "Settled Month",
@@ -736,7 +732,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     
         # Label sumbu Y
         ax.set_yticks(y)
-        ax.set_yticklabels(top10['Diagnosis'], fontsize=label_font, fontproperties=font_prop)
+        ax.set_yticklabels(top10['Diagnosis'], fontsize=30, fontproperties=font_prop)
     
         # Judul dan axis
         ax.set_title(f"{product}", fontsize=label_font + 4, weight='bold', fontproperties=font_prop)
