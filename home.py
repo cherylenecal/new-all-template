@@ -432,6 +432,8 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         )
     
         tbl.auto_set_font_size(False)
+        tbl.scale(1.0, 2.5)
+        row_height = 1.0 / nrows
         HEADER_FS, CELL_FS = 18, 16
     
         for (i, j), cell in tbl.get_celld().items():
@@ -448,6 +450,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
                 txt.set_fontsize(CELL_FS)
             cell.set_edgecolor('black')
             cell.set_linewidth(1)
+            cell.set_height(row_height * 1.2)
     
         plt.tight_layout()
         fig.savefig(filename, bbox_inches='tight')
