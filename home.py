@@ -416,13 +416,10 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         # ukuran figure dinamis
         ncols = len(headers)
         nrows = len(cell_text) + 1
-        fig_width = max(16, ncols * 2.5)
-        fig_height = df.shape[0] * 0.5 + 2
     
         fig, ax = plt.subplots(figsize=(fig_width, fig_height), dpi=150)
         ax.axis('off')
 
-        widths = [0.4] + [0.6/(ncols-1)] * (ncols-1)
         tbl = ax.table(
             cellText=cell_text,
             colLabels=headers,
@@ -430,10 +427,14 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             loc='center',
             colWidths=widths
         )
-    
+        tbl.auto_set_column_width(col=list(range(ncols)))
         tbl.auto_set_font_size(False)
-        tbl.scale(1.0, 1.5)
-        row_height = 1.0 / nrows
+        # Setelah semuanya siap, set height tiap cell
+        # row_h dalam axis fraction: tinggi axes dikali frac = cell height
+        axis_pos = ax.get_position()  # BBox: [xmin, ymin, xmax, ymax]
+        axis_h = axis_pos.height
+        # kita bagi axis height ke nrows, lalu kurangi sedikit agar ada jarak
+        row_h = axis_h / nrows * 0.9
         HEADER_FS, CELL_FS = 18, 16
     
         for (i, j), cell in tbl.get_celld().items():
@@ -450,7 +451,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
                 txt.set_fontsize(CELL_FS)
             cell.set_edgecolor('black')
             cell.set_linewidth(1)
-            cell.set_height(row_height * 0.5)
+            cell.set_height(row_height)
     
         plt.tight_layout()
         fig.savefig(filename, bbox_inches='tight')
