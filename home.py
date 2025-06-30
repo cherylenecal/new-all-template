@@ -428,7 +428,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     st.markdown(format_claim_ratio_table(summary_cr_df), unsafe_allow_html=True)
     
     # 2) Save to PNG with matplotlib table (font_prop & larger figsize)
-        def save_claim_ratio_table_image(df, filename):
+    def save_claim_ratio_table_image(df, filename):
         # 1) Buat figsize yang lebar: width tergantung jumlah kolom
         ncols = len(df.columns)
         fig_width = max(12, ncols * 2)            # misal 2 inch per kolom, minimal 12"
