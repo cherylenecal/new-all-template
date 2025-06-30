@@ -639,10 +639,13 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         # Jika ada legend, terapkan font juga
         legend = ax.get_legend()
         if legend:
+            legend.set_title("Product Type", prop=font_prop)
             for text in legend.get_texts():
                 text.set_fontproperties(font_prop)
                 text.set_fontsize(18)
-        plt.tight_layout(pad=3)
+        plt.tight_layout()
+
+        print(font_prop.get_name())
     
         # Simpan & tampilkan
         month_prod_path = "section4_month_product.png"
