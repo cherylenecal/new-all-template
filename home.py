@@ -390,83 +390,104 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     # Claim Ratio Summary Table (Enhanced Display & PNG output)
     st.subheader("Claim Ratio Summary Table")
     
-    # 1) HTML-render (masih pakai CSS, ukuran font dinaikkan)
+    # 1) HTML-render (CSS font besar)
     def format_claim_ratio_table(df):
         html = "<style>"
-        # Bikin font size header & sel lebih besar
-        html += "table { border-collapse: collapse; width: 100%; font-family: 'VAG Rounded Std Light', sans-serif; }"
-        html += "th, td { border: 1px solid #333; padding: 12px; text-align: center; }"
-        html += "th { background-color: #0070C0; font-weight: bold; color: white; font-size: 18px; }"
-        html += "td { font-size: 16px; color: black; }"
-        html += "tr:nth-child(even) { background-color: #fcfcfa; }"
-        html += "tr:hover { background-color: #ddd; }"
-        html += "</style>"
-    
-        html += "<table><thead><tr>"
+        html += """
+        table {
+          border-collapse: collapse;
+          width: 100%;
+          font-family: 'VAG Rounded Std Light', sans-serif;
+        }
+        th, td {
+          border: 1px solid #333;
+          padding: 12px;
+          text-align: center;
+        }
+        th {
+          background-color: #0070C0;
+          font-weight: bold;
+          color: white;
+          font-size: 18px;
+        }
+        td {
+          font-size: 16px;
+          color: black;
+        }
+        tr:nth-child(even) {
+          background-color: #fcfcfa;
+        }
+        tr:hover {
+          background-color: #ddd;
+        }
+        """
+        html += "</style><table><thead><tr>"
         for col in df.columns:
             html += f"<th>{col}</th>"
         html += "</tr></thead><tbody>"
-    
         for _, row in df.iterrows():
             html += "<tr>"
             for col in df.columns:
-                value = row[col]
-                if isinstance(value, (int, float)):
-                    if col == 'CR' and not pd.isna(value):
-                        content = f"{value:,.2f}%"
-                    elif col == 'Est Claim' and not pd.isna(value):
-                        content = f"{value:,.2f}"
-                    else:
-                        content = f"{int(value):,}"
+                v = row[col]
+                if col == 'CR' and pd.notna(v):
+                    cell = f"{v:.2f}%"
+                elif col == 'Est Claim' and pd.notna(v):
+                    cell = f"{v:,.2f}"
                 else:
-                    content = value
-                html += f"<td>{content}</td>"
+                    try:
+                        cell = f"{int(v):,}"
+                    except:
+                        cell = str(v)
+                html += f"<td>{cell}</td>"
             html += "</tr>"
         html += "</tbody></table>"
         return html
     
     st.markdown(format_claim_ratio_table(summary_cr_df), unsafe_allow_html=True)
     
-    # 2) Save to PNG with matplotlib table (font_prop & larger figsize)
+    # 2) Save to PNG with matplotlib table
     def save_claim_ratio_table_image(df, filename):
-        # 1) Buat copy dan format angka sesuai kolom
-        df_fmt = df.copy()
-        for col in df_fmt.columns:
-            if col == 'CR':
-                df_fmt[col] = df_fmt[col].apply(lambda v: f"{v:.2f}%")
-            elif col == 'Est Claim':
-                df_fmt[col] = df_fmt[col].apply(lambda v: f"{v:,.2f}")
-            else:
-                # Coba ubah jadi int lalu format ribuan
-                df_fmt[col] = df_fmt[col].apply(
-                    lambda v: f"{int(v):,}" if pd.notna(v) and isinstance(v, (int, float)) else v
-                )
+        # Build cellText with formatting
+        headers = df.columns.tolist()
+        cell_text = []
+        for _, row in df.iterrows():
+            formatted = []
+            for col in headers:
+                v = row[col]
+                if col == 'CR' and pd.notna(v):
+                    formatted.append(f"{v:.2f}%")
+                elif col == 'Est Claim' and pd.notna(v):
+                    formatted.append(f"{v:,.2f}")
+                else:
+                    try:
+                        formatted.append(f"{int(v):,}")
+                    except:
+                        formatted.append(str(v))
+            cell_text.append(formatted)
     
-        # 2) Tentukan ukuran figure dinamis
-        ncols = len(df_fmt.columns)
-        fig_width = max(12, ncols * 2)            
-        fig_height = df_fmt.shape[0] * 0.5 + 2    
+        # Determine figure size dynamically
+        ncols = len(headers)
+        fig_width = max(14, ncols * 2)        # 2" per column, min 14"
+        fig_height = df.shape[0] * 0.5 + 2    # 0.5" per row + margin
     
         fig, ax = plt.subplots(figsize=(fig_width, fig_height), dpi=150)
         ax.axis('off')
     
-        # 3) Buat tabel dengan cellText dari df_fmt.values (semua sudah string)
         tbl = ax.table(
-            cellText=df_fmt.values.tolist(),
-            colLabels=df_fmt.columns.tolist(),
+            cellText=cell_text,
+            colLabels=headers,
             cellLoc='center',
             loc='center'
         )
-    
-        # 4) Otomatis set lebar kolom
+        # Auto-adjust column widths
         tbl.auto_set_column_width(col=list(range(ncols)))
     
-        # 5) Styling & font
+        # Styling & font
         tbl.auto_set_font_size(False)
         tbl.scale(1.0, 1.5)
     
         HEADER_FS = 18
-        CELL_FS   = 14
+        CELL_FS   = 16
     
         for (i, j), cell in tbl.get_celld().items():
             cell.set_edgecolor('black')
@@ -486,17 +507,17 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         plt.tight_layout()
         fig.savefig(filename, bbox_inches='tight')
         plt.close(fig)
-
+    
     # Simpan dan tampilkan PNG
     summary_table_name = "claim_ratio_table.png"
     save_claim_ratio_table_image(summary_cr_df, summary_table_name)
     
     if os.path.exists(summary_table_name):
         st.success(f"Tabel berhasil disimpan sebagai gambar: `{summary_table_name}`")
-        # Tampilkan langsung gambarnya
-        st.image(summary_table_name, caption="Claim Ratio Summary Table", use_container_width=True)
+        st.image(summary_table_name, caption="Claim Ratio Summary Table", use_column_width=True)
     else:
         st.error("Gagal menyimpan tabel sebagai gambar.")
+
 
 
     
