@@ -427,7 +427,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             colLabels=headers,
             cellLoc='center',
             loc='center',
-            colWidths=widths
+            colWidths=[0.4] + [0.6/(ncols-1)]*(ncols-1)
         )
         tbl.auto_set_column_width(col=list(range(ncols)))
         tbl.auto_set_font_size(False)
