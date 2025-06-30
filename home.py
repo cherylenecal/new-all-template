@@ -598,6 +598,10 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         # Terapkan font ke semua elemen axis
         apply_font_to_ax(ax, font_prop)
 
+        x_labels = [tick.get_text() for tick in ax.get_xticklabels()]
+        st.markdown("**X-axis tick labels (bulan-bulan):**")
+        st.write(x_labels)   
+
         # Axis labels
         ax.set_xlabel(
             "Settled Month",
@@ -643,11 +647,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             for text in legend.get_texts():
                 text.set_fontproperties(font_prop)
                 text.set_fontsize(18)
-        plt.tight_layout()
-
-        x_labels = [tick.get_text() for tick in ax.get_xticklabels()]
-        st.markdown("**X-axis tick labels (bulan-bulan):**")
-        st.write(x_labels)    
+        plt.tight_layout() 
         
         # Simpan & tampilkan
         month_prod_path = "section4_month_product.png"
