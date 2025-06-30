@@ -616,7 +616,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         ax.tick_params(
             axis='x',
             rotation=45,
-            labelsize=20,
+            labelsize=30,
             pad=10
         )
         for lbl in ax.get_xticklabels():
