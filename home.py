@@ -372,12 +372,19 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     fig.savefig(summary_path, bbox_inches='tight')
     plt.close(fig)
     
+    
     # Validasi
     import os
     if os.path.exists(summary_path):
         st.success(f"Summary metrics berhasil disimpan sebagai gambar: `{summary_path}`")
     else:
         st.error("Gagal menyimpan summary metrics.")
+
+    st.image(
+    summary_path,
+    caption="Summary Metrics Table (akan dimasukkan ke PPT)",
+    use_column_width=True
+    )
 
         
     # Claim Ratio Summary Table (Using HTML/CSS for enhanced display)
