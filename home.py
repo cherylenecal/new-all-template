@@ -389,47 +389,49 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
     st.subheader("Claim Ratio Summary Table")
     
     def save_claim_ratio_table_image(df, filename):
-        # 1) Format semua cell ke string dengan koma ribuan
         headers = df.columns.tolist()
         cell_text = []
+    
         for _, row in df.iterrows():
             formatted = []
             for col in headers:
                 v = row[col]
-                if col == 'CR' and pd.notna(v):
-                    formatted.append(f"{v:.2f}%")
-                elif col == 'Est Claim' and pd.notna(v):
-                    formatted.append(f"{v:,.2f}")
+                # Coba convert ke float bila perlu
+                try:
+                    num = float(v)
+                except:
+                    num = None
+    
+                if col == 'CR' and num is not None:
+                    formatted.append(f"{num:.2f}%")
+                elif col == 'Est Claim' and num is not None:
+                    formatted.append(f"{num:,.2f}")
+                elif num is not None:
+                    formatted.append(f"{int(num):,}")
                 else:
-                    try:
-                        formatted.append(f"{int(v):,}")
-                    except:
-                        formatted.append(str(v))
+                    # fallback ke string as-is
+                    formatted.append(str(v))
             cell_text.append(formatted)
     
-        # 2) Ukuran figure: lebar 3" per kolom, tinggi 0.6" per baris
+        # ukuran figure dinamis
         ncols = len(headers)
-        nrows = len(cell_text) + 1  # +1 untuk header
+        nrows = len(cell_text) + 1
         fig_width = max(12, ncols * 3)
         fig_height = max(4, nrows * 0.6)
     
         fig, ax = plt.subplots(figsize=(fig_width, fig_height), dpi=150)
         ax.axis('off')
     
-        # 3) Buat tabel dengan colWidths merata
-        col_widths = [1.0 / ncols] * ncols
         tbl = ax.table(
             cellText=cell_text,
             colLabels=headers,
             cellLoc='center',
             loc='center',
-            colWidths=col_widths
+            colWidths=[1.0/ncols]*ncols
         )
     
-        # 4) Styling & font
         tbl.auto_set_font_size(False)
-        HEADER_FS = 18
-        CELL_FS   = 16
+        HEADER_FS, CELL_FS = 18, 16
     
         for (i, j), cell in tbl.get_celld().items():
             txt = cell.get_text()
@@ -449,7 +451,6 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         plt.tight_layout()
         fig.savefig(filename, bbox_inches='tight')
         plt.close(fig)
-    
         
     # Simpan dan tampilkan PNG
     summary_table_name = "claim_ratio_table.png"
