@@ -450,7 +450,7 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
                 txt.set_fontsize(CELL_FS)
             cell.set_edgecolor('black')
             cell.set_linewidth(1)
-            cell.set_height(row_height * 1.2)
+            cell.set_height(row_height * 0.8)
     
         plt.tight_layout()
         fig.savefig(filename, bbox_inches='tight')
