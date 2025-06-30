@@ -451,16 +451,16 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
         plt.close(fig)
     
         
-        # Simpan dan tampilkan PNG
-        summary_table_name = "claim_ratio_table.png"
-        save_claim_ratio_table_image(summary_cr_df, summary_table_name)
-        st.image(summary_table_name, caption="Claim Ratio Summary Table", use_container_width=True)
+    # Simpan dan tampilkan PNG
+    summary_table_name = "claim_ratio_table.png"
+    save_claim_ratio_table_image(summary_cr_df, summary_table_name)
+    st.image(summary_table_name, caption="Claim Ratio Summary Table", use_container_width=True)
 
-        if os.path.exists(summary_table_name):
-            st.success(f"Tabel berhasil disimpan sebagai gambar: `{summary_table_name}`")
-            st.image(summary_table_name, caption="Claim Ratio Summary Table", use_container_width=True)
-        else:
-            st.error("Gagal menyimpan tabel sebagai gambar.")
+    if os.path.exists(summary_table_name):
+        st.success(f"Tabel berhasil disimpan sebagai gambar: `{summary_table_name}`")
+        st.image(summary_table_name, caption="Claim Ratio Summary Table", use_container_width=True)
+    else:
+        st.error("Gagal menyimpan tabel sebagai gambar.")
 
 
 
