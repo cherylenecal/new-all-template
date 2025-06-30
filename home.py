@@ -619,18 +619,22 @@ if uploaded_claim and uploaded_claim_ratio and uploaded_benefit:
             labelsize=20,
             pad=10
         )
-        for lbl in ax.get_xticklabels():
-            lbl.set_fontsize(20)
-            lbl.set_fontproperties(font_prop)
+        # for lbl in ax.get_xticklabels():
+        #     lbl.set_fontsize(20)
+        #     lbl.set_fontproperties(font_prop)
 
         ax.tick_params(
             axis='y',
             labelsize=20,
             pad=10
         )
-        for lbl in ax.get_yticklabels():
-            lbl.set_fontsize(20)
-            lbl.set_fontproperties(font_prop)
+        # for lbl in ax.get_yticklabels():
+        #     lbl.set_fontsize(20)
+        #     lbl.set_fontproperties(font_prop)
+
+        plt.setp(ax.get_xticklabels(), fontsize=20, fontproperties=font_prop)
+        plt.setp(ax.get_yticklabels(), fontsize=20, fontproperties=font_prop)
+
             
         # Jika ada legend, terapkan font juga
         legend = ax.get_legend()
